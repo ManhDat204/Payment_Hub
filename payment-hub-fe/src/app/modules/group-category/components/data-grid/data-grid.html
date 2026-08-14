@@ -1,0 +1,77 @@
+<div class="data-grid">
+    <div class="grid-content">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 40px;"><input type="checkbox" (change)="toggleAll($event.target.checked)"
+                            title="Chọn tất cả"></th>
+                    <th style="width: 50px;">STT</th>
+                    <th>Danh mục theo nhóm</th>
+                    <th>Giá trị thành phần</th>
+                    <th>Tên thành phần</th>
+                    <th>Mô tả</th>
+                    <th>Cấu phần xử lý</th>
+                    <th>Ngày hiệu lực</th>
+                    <th>Ngày hết hiệu lực</th>
+                    <th>Trạng thái tham số</th>
+                    <th>Trạng thái hoạt động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngIf="!loading && (!data?.content || data.content.length === 0)">
+                    <tr>
+                        <td colspan="11" class="grid-empty">
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                </ng-container>
+                <tr *ngFor="let row of data?.content; let i = index" (dblclick)="rowDoubleClick.emit(row)"
+                    [class.selected]="selectedIds.has(row.id)">
+                    <td class="checkbox-col"><input type="checkbox" [checked]="selectedIds.has(row.id)"
+                            (change)="toggleRow(row.id, $event.target.checked)"></td>
+                    <td class="stt-col">{{ data!.page * data!.size + i + 1 }}</td>
+                    <td>{{ row.paramType }}</td>
+                    <td>{{ row.paramValue }}</td>
+                    <td>{{ row.paramName }}</td>
+                    <td>{{ row.description }}</td>
+                    <td>{{ row.componentCode }}</td>
+                    <td>{{ row.effectiveDate ? (row.effectiveDate | date:'dd/MM/yyyy') : '-' }}</td>
+                    <td>{{ row.endEffectiveDate ? (row.endEffectiveDate | date:'dd/MM/yyyy') : '-' }}</td>
+                    <td>
+                        <span [ngClass]="getStatusClass(row.status)" class="status-cell">
+                            {{ getStatusLabel(row.status) }}
+                        </span>
+                    </td>
+                    <td>
+                        <span [ngClass]="getActiveClass(row.isActive)" class="is-active-cell">
+                            {{ getActiveLabel(row.isActive) }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination (data.page is 0-based, matching what search() sends to the backend) -->
+    <div class="grid-pagination" *ngIf="data && data.content.length > 0">
+        <button class="pagination-btn" (click)="pageChange.emit(1)" [disabled]="data.page === 0">
+            &laquo;
+        </button>
+        <button class="pagination-btn" (click)="pageChange.emit(data.page)" [disabled]="data.page === 0">
+            &lt;
+        </button>
+
+        <span class="pagination-info">
+            Trang {{ data.page + 1 }} / {{ data.totalPages || 1 }}
+        </span>
+
+        <button class="pagination-btn" (click)="pageChange.emit(data.page + 2)"
+            [disabled]="data.page + 1 >= data.totalPages">
+            &gt;
+        </button>
+        <button class="pagination-btn" (click)="pageChange.emit(data.totalPages)"
+            [disabled]="data.page + 1 >= data.totalPages">
+            &raquo;
+        </button>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="page-container">
+  <div class="page-wrapper">
+    <div class="page-header">
+      <div class="page-title-section">
+        <div class="page-breadcrumb">
+          <span>Trang chủ </span>
+          <span class="sep"> › </span>
+          <span>Tham số danh mục theo nhóm</span>
+        </div>
+        <h1 class="page-title">Tham số danh mục theo nhóm</h1>
+      </div>
+
+      <div class="page-actions">
+        <button class="btn-add" (click)="onAddNew()">Thêm mới</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="content-section">
+        <app-group-category-search-filter (search)="onSearch($event)" (reset)="load()"></app-group-category-search-filter>
+      </div>
+
+      <div class="grid-section">
+        <div class="grid-toolbar">
+          <div class="grid-info">
+            Danh sách bản ghi
+            <span class="grid-record-count">({{ data?.total ?? 0 }})</span>
+          </div>
+
+          <div class="grid-actions">
+            <button class="toolbar-btn" type="button" (click)="onExport()">Xuất Excel</button>
+          </div>
+        </div>
+
+        <app-group-category-grid
+          [data]="data"
+          [loading]="loading"
+          [selectedIds]="selectedIds"
+          (rowDoubleClick)="onRowDoubleClick($event)"
+          (selectionChange)="onSelectionChange($event)"
+          (pageChange)="onPageChange($event)">
+        </app-group-category-grid>
+      </div>
+    </div>
+  </div>
+</div>

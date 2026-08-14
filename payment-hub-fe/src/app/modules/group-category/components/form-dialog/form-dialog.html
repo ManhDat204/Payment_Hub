@@ -1,0 +1,68 @@
+<div class="form-wrapper">
+    <!-- Header với tiêu đề và nút điều khiển -->
+    <div class="form-header">
+        <h3 class="form-title">Thêm mới tham số danh mục theo nhóm</h3>
+        <div class="form-actions">
+            <button type="button" class="btn-icon-close" title="Đóng" (click)="onCancel()">×</button>
+            <button type="button" class="btn btn-outline" [disabled]="submitting || !form.valid"
+                (click)="save()">Lưu</button>
+            <button type="button" class="btn btn-primary" [disabled]="submitting || !form.valid"
+                (click)="saveAndSubmit()">
+                Lưu và gửi duyệt
+            </button>
+        </div>
+    </div>
+
+    <!-- Form container -->
+    <form [formGroup]="form" class="form-content">
+        <!-- Row 1: 4 cột (Danh mục, Giá trị, Tên, Cấu phần) -->
+        <div class="form-row-4col">
+            <div class="form-group">
+                <label>Danh mục theo nhóm <span class="required">*</span></label>
+                <input type="text" formControlName="paramType" class="form-control" placeholder="STATUS_TYPE" />
+            </div>
+
+            <div class="form-group">
+                <label>Giá trị thành phần <span class="required">*</span></label>
+                <input type="text" formControlName="paramValue" class="form-control" placeholder="01" />
+            </div>
+
+            <div class="form-group">
+                <label>Tên thành phần <span class="required">*</span></label>
+                <input type="text" formControlName="paramName" class="form-control" placeholder="" />
+            </div>
+
+            <div class="form-group">
+                <label>Cấu phần xử lý <span class="required">*</span></label>
+                <select formControlName="componentCode" class="form-control">
+                    <option value="" disabled>TRA</option>
+                    <option *ngFor="let option of componentOptions" [value]="option.componentCode">
+                        {{ option.componentName }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 2: 2 cột (Ngày hiệu lực) -->
+        <div class="form-row-2col">
+            <div class="form-group">
+                <label>Ngày hiệu lực <span class="required">*</span></label>
+                <input type="text" formControlName="effectiveDate" class="form-control" placeholder="dd/mm/yyyy" />
+            </div>
+
+            <div class="form-group">
+                <label>Ngày hết hiệu lực</label>
+                <input type="text" formControlName="endEffectiveDate" class="form-control" placeholder="dd/mm/yyyy" />
+            </div>
+        </div>
+
+        <!-- Row 3: Mô tả (full width) -->
+        <div class="form-row-full">
+            <div class="form-group">
+                <label>Mô tả</label>
+                <textarea formControlName="description" class="form-control" rows="3"
+                    placeholder="TRẠNG THÁI XỬ LÝ TẠI FRONTEND"></textarea>
+            </div>
+        </div>
+    </form>
+</div>

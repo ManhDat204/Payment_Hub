@@ -1,0 +1,94 @@
+<div class="page-container">
+  <div class="page-wrapper">
+    <div class="page-header">
+      <div class="page-title-section">
+        <div class="page-breadcrumb">
+          <span>Trang chủ</span>
+          <span>Tham số danh mục theo nhóm</span>
+        </div>
+        <h1 class="page-title">Tham số danh mục theo nhóm</h1>
+      </div>
+
+      <div class="page-actions">
+        <button class="btn-add" (click)="onAddNew()">Thêm mới</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="content-section">
+        <app-group-category-search-filter (search)="onSearch($event)" (reset)="load()"></app-group-category-search-filter>
+      </div>
+
+      <div class="grid-section">
+        <div class="grid-toolbar">
+          <div class="grid-info">
+            Danh sách bản ghi
+            <span class="grid-record-count">({{ data?.total ?? 0 }})</span>
+          </div>
+
+          <div class="grid-actions">
+            <button class="toolbar-btn" type="button" (click)="onExport()">Xuất Excel</button>
+            <button class="toolbar-btn" type="button" (click)="openHistory(getFirstSelectedId())">Lịch sử</button>
+          </div>
+        </div>
+
+        <div class="grid-action-row" *ngIf="data?.items?.length">
+          <button type="button" class="mini-btn" (click)="openEdit(data.items[0])">Sửa</button>
+          <button type="button" class="mini-btn" (click)="openCopy(data.items[0])">Sao chép</button>
+          <button type="button" class="mini-btn" (click)="openDetail(data.items[0])">Xem chi tiết</button>
+        </div>
+
+        <app-group-category-grid
+          [data]="data"
+          [loading]="loading"
+          [selectedIds]="selectedIds"
+          (rowDoubleClick)="onRowDoubleClick($event)"
+          (selectionChange)="onSelectionChange($event)"
+          (pageChange)="onPageChange($event)">
+        </app-group-category-grid>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-backdrop" *ngIf="formDialogVisible">
+  <div class="dialog-shell dialog-shell-md">
+    <app-form-dialog
+      [mode]="formMode"
+      [source]="formSource || undefined"
+      (saved)="onFormSaved($event)">
+    </app-form-dialog>
+  </div>
+</div>
+
+<div class="dialog-backdrop" *ngIf="detailDialogVisible && selectedRecord">
+  <div class="dialog-shell dialog-shell-lg">
+    <app-group-category-detail-dialog
+      [record]="selectedRecord"
+      [diff]="detailDiff"
+      (action)="onDetailAction($event)">
+    </app-group-category-detail-dialog>
+  </div>
+</div>
+
+<div class="dialog-backdrop" *ngIf="confirmDialogVisible">
+  <div class="dialog-shell dialog-shell-sm">
+    <app-confirm-dialog
+      [title]="confirmTitle"
+      [message]="confirmMessage"
+      (confirmed)="onConfirmResult($event)">
+    </app-confirm-dialog>
+  </div>
+</div>
+
+<div class="dialog-backdrop" *ngIf="rejectDialogVisible && selectedRecord">
+  <div class="dialog-shell dialog-shell-sm">
+    <app-reject-reason-dialog (reasonSubmitted)="onReasonSubmitted($event)"></app-reject-reason-dialog>
+  </div>
+</div>
+
+<div class="dialog-backdrop" *ngIf="historyDialogVisible">
+  <div class="dialog-shell dialog-shell-lg">
+    <app-group-category-history-dialog [id]="historyId"></app-group-category-history-dialog>
+  </div>
+</div>

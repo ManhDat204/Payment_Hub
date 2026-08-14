@@ -1,0 +1,49 @@
+<!-- detail-dialog.component.html -->
+<div class="diff-columns" *ngIf="diff">
+    <div class="diff-col">
+        <h4><tui-icon icon="tuiIconInfoCircle"></tui-icon> Dữ liệu cũ</h4>
+        <div class="diff-field"><label>Tên thành phần</label><span>{{ diff.oldData?.paramName || '-' }}</span></div>
+        <div class="diff-field"><label>Giá trị thành phần</label><span>{{ diff.oldData?.paramValue || '-' }}</span>
+        </div>
+        <div class="diff-field"><label>Danh mục theo nhóm</label><span>{{ diff.oldData?.paramType || '-' }}</span></div>
+        <div class="diff-field"><label>Cấu phần xử lý</label><span>{{ diff.oldData?.componentCode || '-' }}</span></div>
+        <div class="diff-field"><label>Ngày hiệu lực</label><span>{{ diff.oldData?.effectiveDate || '-' }}</span></div>
+        <div class="diff-field"><label>Ngày hết hiệu lực</label><span>{{ diff.oldData?.endEffectiveDate || '-' }}</span>
+        </div>
+        <div class="diff-field"><label>Mô tả</label><span>{{ diff.oldData?.description || '-' }}</span></div>
+    </div>
+
+    <div class="diff-col">
+        <h4><tui-icon icon="tuiIconInfoCircle"></tui-icon> Dữ liệu mới</h4>
+        <div class="diff-field" [class.highlight]="isChanged('paramName')">
+            <label>Tên thành phần</label><span>{{ diff.newData?.paramName || '-' }}</span>
+        </div>
+        <div class="diff-field" [class.highlight]="isChanged('paramValue')">
+            <label>Giá trị thành phần</label><span>{{ diff.newData?.paramValue || '-' }}</span>
+        </div>
+        <div class="diff-field" [class.highlight]="isChanged('paramType')">
+            <label>Danh mục theo nhóm</label><span>{{ diff.newData?.paramType || '-' }}</span>
+        </div>
+        <div class="diff-field" [class.highlight]="isChanged('componentCode')">
+            <label>Cấu phần xử lý</label><span>{{ diff.newData?.componentCode || '-' }}</span>
+        </div>
+        <div class="diff-field" [class.highlight]="isChanged('effectiveDate')">
+            <label>Ngày hiệu lực</label><span>{{ diff.newData?.effectiveDate | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+        </div>
+        <div class="diff-field" [class.highlight]="isChanged('endEffectiveDate')">
+            <label>Ngày hết hiệu lực</label><span>{{ diff.newData?.endEffectiveDate | date:'dd/MM/yyyy HH:mm:ss'
+                }}</span>
+        </div>
+        <div class="diff-field" [class.highlight]="isChanged('description')">
+            <label>Mô tả</label><span>{{ diff.newData?.description || '-' }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="dialog-footer">
+    <button *ngIf="showDelete" tuiButton appearance="outline" (click)="delete()">Xóa</button>
+    <button *ngIf="showSubmit" tuiButton appearance="primary" (click)="submit()">Gửi duyệt</button>
+    <button *ngIf="showApproveReject" tuiButton appearance="outline" (click)="reject()">Từ chối</button>
+    <button *ngIf="showApproveReject" tuiButton appearance="primary" (click)="approve()">Phê duyệt</button>
+    <button *ngIf="showCancelApproval" tuiButton appearance="primary" (click)="cancelApproval()">Hủy phê duyệt</button>
+</div>

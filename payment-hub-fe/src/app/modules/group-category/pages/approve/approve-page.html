@@ -1,0 +1,23 @@
+<div class="page-container">
+  <div class="page-header-back">
+    <button class="btn-back" (click)="onBack()">
+      <span class="arrow">&lt;</span>
+      <span>Trở lại</span>
+    </button>
+    <h2 class="page-title">{{ pageTitle }}</h2>
+  </div>
+
+  <div class="page-content">
+    <app-confirm-dialog
+      *ngIf="showConfirm && mode === 'approve'"
+      [title]="confirmTitle"
+      [message]="confirmMessage"
+      (confirmed)="onConfirmed($event)">
+    </app-confirm-dialog>
+
+    <app-reject-reason-dialog
+      *ngIf="showRejectReason && mode === 'reject'"
+      (reasonSubmitted)="onReasonSubmitted($event)">
+    </app-reject-reason-dialog>
+  </div>
+</div>

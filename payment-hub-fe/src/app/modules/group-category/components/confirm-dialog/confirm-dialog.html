@@ -1,0 +1,14 @@
+<!-- confirm-dialog.component.html -->
+<div class="dialog-header">
+    <h3>{{ title }}</h3>
+    <button tuiIconButton icon="tuiIconClose" (click)="cancel()"></button>
+</div>
+
+<div class="dialog-content">
+    <p>{{ message }}</p>
+</div>
+
+<div class="dialog-footer">
+    <button tuiButton appearance="outline" (click)="cancel()">Hủy bỏ</button>
+    <button tuiButton appearance="primary" (click)="confirm()">Xác nhận</button>
+</div>

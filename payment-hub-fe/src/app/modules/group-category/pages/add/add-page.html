@@ -1,0 +1,13 @@
+<div class="page-container">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <span class="crumb" (click)="onBack()">Trang chủ</span>
+    <span class="sep">›</span>
+    <span class="crumb" (click)="onBack()">Tham số danh mục theo nhóm</span>
+    <span class="sep">›</span>
+    <span class="crumb"> Thêm mới</span>
+  </div>
+
+  <!-- Form -->
+  <app-form-dialog [mode]="mode" [source]="source || undefined" (saved)="onSaved($event)"></app-form-dialog>
+</div>

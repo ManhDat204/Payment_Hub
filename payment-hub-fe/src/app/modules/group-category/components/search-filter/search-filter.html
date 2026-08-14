@@ -1,0 +1,37 @@
+<form [formGroup]="form" class="filter-card" (ngSubmit)="onSearch()">
+  <div class="filter-grid">
+    <label class="field-group">
+      <span>Danh mục theo nhóm</span>
+      <input formControlName="paramType" type="text" placeholder="Nhập nội dung" />
+    </label>
+
+    <label class="field-group">
+      <span>Giá trị thành phần</span>
+      <input formControlName="paramValue" type="text" placeholder="Nhập nội dung" />
+    </label>
+
+    <label class="field-group">
+      <span>Tên thành phần</span>
+      <input formControlName="paramName" type="text" placeholder="Nhập nội dung" />
+    </label>
+
+    <label class="field-group">
+      <span>Trạng thái tham số</span>
+      <select formControlName="status">
+        <option *ngFor="let item of statusItems" [ngValue]="item">{{ item.label }}</option>
+      </select>
+    </label>
+
+    <label class="field-group">
+      <span>Trạng thái hoạt động</span>
+      <select formControlName="isActiveOpt">
+        <option *ngFor="let item of isActiveItems" [ngValue]="item">{{ item.label }}</option>
+      </select>
+    </label>
+
+    <div class="filter-actions">
+      <button type="button" class="btn btn-secondary" (click)="onReset()">Xóa bộ lọc</button>
+      <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    </div>
+  </div>
+</form>

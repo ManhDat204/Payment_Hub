@@ -1,0 +1,13 @@
+<div class="page-container">
+  <div class="page-header-back">
+    <button class="btn-back" (click)="onBack()">
+      <span class="arrow">&lt;</span>
+      <span>Trở lại</span>
+    </button>
+    <h2 class="page-title">Lịch sử tham số danh mục theo nhóm</h2>
+  </div>
+
+  <div class="page-content">
+    <app-group-category-history-dialog [id]="historyId"></app-group-category-history-dialog>
+  </div>
+</div>

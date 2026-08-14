@@ -1,0 +1,23 @@
+<!-- history-dialog.component.html -->
+<h3>Lịch sử thao tác</h3>
+<table tuiTable [columns]="['user', 'date', 'action', 'ip', 'content']">
+    <thead>
+        <tr tuiThGroup>
+            <th tuiTh>Người dùng</th>
+            <th tuiTh>Ngày thực hiện</th>
+            <th tuiTh>Thao tác</th>
+            <th tuiTh>IP</th>
+            <th tuiTh>Nội dung</th>
+        </tr>
+    </thead>
+    <tbody tuiTbody [data]="data?.items ?? []">
+        <tr *ngFor="let log of data?.items" tuiTr>
+            <td tuiTd>{{ log.userName }}</td>
+            <td tuiTd>{{ log.actionAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+            <td tuiTd>{{ log.action }}</td>
+            <td tuiTd>{{ log.ip }}</td>
+            <td tuiTd>{{ log.content }}</td>
+        </tr>
+    </tbody>
+</table>
+<tui-pagination [length]="data?.total ?? 0" [pageSize]="pageSize" (indexChange)="onPageChange($event)"></tui-pagination>

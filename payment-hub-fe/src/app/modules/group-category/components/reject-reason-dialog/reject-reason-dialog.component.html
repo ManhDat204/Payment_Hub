@@ -1,0 +1,10 @@
+<!-- reject-reason-dialog.component.html -->
+<h3>Lý do từ chối</h3>
+<tui-text-area [formControl]="reasonControl" [maxLength]="500">
+    Nhập lý do từ chối
+</tui-text-area>
+<div class="char-count">{{ reasonControl.value?.length || 0 }}/500</div>
+<div class="dialog-footer">
+    <button tuiButton appearance="outline" (click)="cancel()">Hủy</button>
+    <button tuiButton appearance="primary" [disabled]="reasonControl.invalid" (click)="confirm()">Xác nhận</button>
+</div>

@@ -1,0 +1,51 @@
+/* Approve page styles */
+.page-container {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.page-header-back {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  background: #f9f9f9;
+  border-color: #bbb;
+}
+
+.arrow {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.page-content {
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 20px;
+}
+
