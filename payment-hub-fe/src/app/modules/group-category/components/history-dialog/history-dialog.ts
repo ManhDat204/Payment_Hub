@@ -8,7 +8,6 @@ import { HistoryLog } from '../../models/model';
 @Component({
   selector: 'app-group-category-history-dialog',
   templateUrl: './history-dialog.html',
-  styleUrls: ['./history-dialog.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [CommonModule, TuiTable, TuiTableThGroup, TuiTableTh, TuiTableTbody, TuiTableTr, TuiTableTd, TuiPagination],

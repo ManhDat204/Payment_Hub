@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TuiButton } from '@taiga-ui/core';
 import { GroupCategory, GroupCategoryDiff } from '../../models/model';
 import { ParamStatus, IsDisplay } from '../../models/status.enum';
 
@@ -9,10 +8,9 @@ type Action = 'approve' | 'reject' | 'submit' | 'cancel' | 'delete';
 @Component({
   selector: 'app-group-category-detail-dialog',
   templateUrl: './detail-dialog.html',
-  styleUrls: ['./detail-dialog.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CommonModule, TuiButton],
+  imports: [CommonModule],
 })
 export class DetailDialogComponent {
   @Input() diff: GroupCategoryDiff | null = null;
@@ -38,13 +36,32 @@ export class DetailDialogComponent {
   }
   get showDelete(): boolean {
     if (!this.record) return false;
+    // Chỉ cho phép xóa khi IS_DISPLAY = 1 (Chưa duyệt)
     return this.record.isDisplay === IsDisplay.NOT_APPROVED;
   }
 
-  submit(): void { this.action.emit('submit'); }
-  approve(): void { this.action.emit('approve'); }
-  reject(): void { this.action.emit('reject'); }
-  cancelApproval(): void { this.action.emit('cancel'); }
-  delete(): void { this.action.emit('delete'); }
-  close(): void { this.action.emit(null); }
+  submit(): void { 
+    console.log('🔵 Detail dialog: submit() called');
+    this.action.emit('submit'); 
+  }
+  approve(): void { 
+    console.log('🔵 Detail dialog: approve() called');
+    this.action.emit('approve'); 
+  }
+  reject(): void { 
+    console.log('🔵 Detail dialog: reject() called');
+    this.action.emit('reject'); 
+  }
+  cancelApproval(): void { 
+    console.log('🔵 Detail dialog: cancelApproval() called');
+    this.action.emit('cancel'); 
+  }
+  delete(): void { 
+    console.log('🔵 Detail dialog: delete() called');
+    this.action.emit('delete'); 
+  }
+  close(): void { 
+    console.log('🔵 Detail dialog: close() called');
+    this.action.emit(null); 
+  }
 }

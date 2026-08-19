@@ -2,13 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GroupCategoryNavigationService, NavigationState } from '../../services/navigation.service';
 import { GroupCategory } from '../../models/model';
-import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent, ConfirmDialogConfig } from '../../components/confirm-dialog/confirm-dialog';
 import { RejectReasonDialogComponent } from '../../components/reject-reason-dialog/reject-reason-dialog.component';
 
 @Component({
   selector: 'app-group-category-approve-page',
   templateUrl: './approve-page.html',
-  styleUrls: ['./approve-page.css'],
   standalone: true,
   imports: [CommonModule, ConfirmDialogComponent, RejectReasonDialogComponent],
 })
@@ -18,9 +17,15 @@ export class GroupCategoryApprovePageComponent implements OnInit {
   mode: 'approve' | 'reject' = 'approve';
   showConfirm = false;
   showRejectReason = false;
-  confirmTitle = 'Phê duyệt';
-  confirmMessage = 'Bạn có chắc chắn phê duyệt bản ghi này?';
   pageTitle = 'Phê duyệt';
+  
+  approveDialogConfig: ConfirmDialogConfig = {
+    title: 'Phê duyệt',
+    message: 'Bạn có chắc chắn phê duyệt bản ghi này?',
+    confirmText: 'Xác nhận',
+    cancelText: 'Hủy',
+    icon: 'question'
+  };
 
   constructor(private readonly navigationService: GroupCategoryNavigationService) {}
 
@@ -31,8 +36,6 @@ export class GroupCategoryApprovePageComponent implements OnInit {
         this.mode = 'approve';
         this.record = state.record || null;
         this.showConfirm = true;
-        this.confirmTitle = 'Phê duyệt';
-        this.confirmMessage = 'Bạn có chắc chắn phê duyệt bản ghi này?';
         this.pageTitle = 'Phê duyệt tham số danh mục theo nhóm';
       } else if (state.mode === 'reject') {
         this.mode = 'reject';
@@ -43,9 +46,8 @@ export class GroupCategoryApprovePageComponent implements OnInit {
     });
   }
 
-  onConfirmed(confirmed: boolean): void {
-    if (confirmed && this.record) {
-      // Handle approve action
+  onConfirmed(result: { confirmed: boolean; inputValue?: string }): void {
+    if (result.confirmed && this.record) {
       console.log('Approved:', this.record);
     }
     this.navigationService.navigateToList();
@@ -53,7 +55,6 @@ export class GroupCategoryApprovePageComponent implements OnInit {
 
   onReasonSubmitted(reason: string | null): void {
     if (reason && this.record) {
-      // Handle reject action with reason
       console.log('Rejected:', this.record, 'Reason:', reason);
     }
     this.navigationService.navigateToList();

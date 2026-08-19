@@ -1,49 +1,252 @@
-<!-- detail-dialog.component.html -->
-<div class="diff-columns" *ngIf="diff">
-    <div class="diff-col">
-        <h4><tui-icon icon="tuiIconInfoCircle"></tui-icon> Dữ liệu cũ</h4>
-        <div class="diff-field"><label>Tên thành phần</label><span>{{ diff.oldData?.paramName || '-' }}</span></div>
-        <div class="diff-field"><label>Giá trị thành phần</label><span>{{ diff.oldData?.paramValue || '-' }}</span>
+<!-- Dialog Overlay -->
+<div class="dialog-overlay" (click)="close()">
+  <div class="dialog" (click)="$event.stopPropagation()" style="max-width: 900px;">
+    
+    <!-- Dialog Header -->
+    <div class="dialog-header" style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <h2 style="font-size: 18px; font-weight: 600; margin: 0; color: var(--gray-900);">
+            Xem chi tiết
+          </h2>
+          <span *ngIf="record" class="badge"
+                [class.badge-new]="record.status === 1"
+                [class.badge-pending]="record.status === 3"
+                [class.badge-approved]="record.status === 4"
+                [class.badge-rejected]="record.status === 5"
+                [class.badge-cancelled]="record.status === 7"
+                style="font-size: 12px; padding: 4px 10px;">
+            {{ record.status === 1 ? '1 - Tạo mới' : 
+               record.status === 3 ? '3 - Chờ duyệt' :
+               record.status === 4 ? '4 - Đã duyệt' :
+               record.status === 5 ? '5 - Từ chối' :
+               record.status === 7 ? '7 - Hủy duyệt' : '' }}
+          </span>
         </div>
-        <div class="diff-field"><label>Danh mục theo nhóm</label><span>{{ diff.oldData?.paramType || '-' }}</span></div>
-        <div class="diff-field"><label>Cấu phần xử lý</label><span>{{ diff.oldData?.componentCode || '-' }}</span></div>
-        <div class="diff-field"><label>Ngày hiệu lực</label><span>{{ diff.oldData?.effectiveDate || '-' }}</span></div>
-        <div class="diff-field"><label>Ngày hết hiệu lực</label><span>{{ diff.oldData?.endEffectiveDate || '-' }}</span>
-        </div>
-        <div class="diff-field"><label>Mô tả</label><span>{{ diff.oldData?.description || '-' }}</span></div>
+        <button (click)="close()" class="btn-close-x">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <div class="diff-col">
-        <h4><tui-icon icon="tuiIconInfoCircle"></tui-icon> Dữ liệu mới</h4>
-        <div class="diff-field" [class.highlight]="isChanged('paramName')">
-            <label>Tên thành phần</label><span>{{ diff.newData?.paramName || '-' }}</span>
+    <!-- Dialog Body - 2 Column Comparison -->
+    <div class="dialog-body" style="padding: 24px; overflow-y: auto; max-height: calc(90vh - 200px);">
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        
+        <!-- Dữ liệu cũ -->
+        <div style="background: var(--gray-50); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" fill="#FFA500" fill-opacity="0.2"/>
+              <circle cx="10" cy="10" r="4" fill="#FFA500"/>
+            </svg>
+            <h3 style="font-size: 15px; font-weight: 600; margin: 0; color: var(--gray-800);">Dữ liệu cũ</h3>
+          </div>
+
+          <div class="detail-field">
+            <label>Tên thành phần</label>
+            <div class="value">{{ diff?.oldData?.paramName || '-' }}</div>
+          </div>
+
+          <div class="detail-field">
+            <label>Giá trị thành phần</label>
+            <div class="value">{{ diff?.oldData?.paramValue || '-' }}</div>
+          </div>
+
+          <div class="detail-field">
+            <label>Danh mục theo nhóm</label>
+            <div class="value">{{ diff?.oldData?.paramType || '-' }}</div>
+          </div>
+
+          <div class="detail-field">
+            <label>Cấu phần xử lý</label>
+            <div class="value">{{ diff?.oldData?.componentCode || '-' }}</div>
+          </div>
+
+          <div class="detail-field">
+            <label>Ngày hiệu lực</label>
+            <div class="value">{{ diff?.oldData?.effectiveDate || '-' }}</div>
+          </div>
+
+          <div class="detail-field">
+            <label>Ngày hết hiệu lực</label>
+            <div class="value">{{ diff?.oldData?.endEffectiveDate || '-' }}</div>
+          </div>
+
+          <div class="detail-field">
+            <label>Mô tả</label>
+            <div class="value">{{ diff?.oldData?.description || '-' }}</div>
+          </div>
         </div>
-        <div class="diff-field" [class.highlight]="isChanged('paramValue')">
-            <label>Giá trị thành phần</label><span>{{ diff.newData?.paramValue || '-' }}</span>
+
+        <!-- Dữ liệu mới -->
+        <div style="background: var(--primary-light); border: 1px solid var(--primary-color); border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" fill="#0B7B7D" fill-opacity="0.2"/>
+              <circle cx="10" cy="10" r="4" fill="#0B7B7D"/>
+            </svg>
+            <h3 style="font-size: 15px; font-weight: 600; margin: 0; color: var(--gray-800);">Dữ liệu mới</h3>
+          </div>
+
+          <div class="detail-field" [class.changed]="isChanged('paramName')">
+            <label>Tên thành phần</label>
+            <div class="value">{{ diff?.newData?.paramName || record?.paramName || '-' }}</div>
+          </div>
+
+          <div class="detail-field" [class.changed]="isChanged('paramValue')">
+            <label>Giá trị thành phần</label>
+            <div class="value">{{ diff?.newData?.paramValue || record?.paramValue || '-' }}</div>
+          </div>
+
+          <div class="detail-field" [class.changed]="isChanged('paramType')">
+            <label>Danh mục theo nhóm</label>
+            <div class="value">{{ diff?.newData?.paramType || record?.paramType || '-' }}</div>
+          </div>
+
+          <div class="detail-field" [class.changed]="isChanged('componentCode')">
+            <label>Cấu phần xử lý</label>
+            <div class="value">{{ diff?.newData?.componentCode || record?.componentCode || '-' }}</div>
+          </div>
+
+          <div class="detail-field" [class.changed]="isChanged('effectiveDate')">
+            <label>Ngày hiệu lực</label>
+            <div class="value">{{ diff?.newData?.effectiveDate || record?.effectiveDate || '-' }}</div>
+          </div>
+
+          <div class="detail-field" [class.changed]="isChanged('endEffectiveDate')">
+            <label>Ngày hết hiệu lực</label>
+            <div class="value">{{ diff?.newData?.endEffectiveDate || record?.endEffectiveDate || '-' }}</div>
+          </div>
+
+          <div class="detail-field" [class.changed]="isChanged('description')">
+            <label>Mô tả</label>
+            <div class="value">{{ diff?.newData?.description || record?.description || '-' }}</div>
+          </div>
         </div>
-        <div class="diff-field" [class.highlight]="isChanged('paramType')">
-            <label>Danh mục theo nhóm</label><span>{{ diff.newData?.paramType || '-' }}</span>
-        </div>
-        <div class="diff-field" [class.highlight]="isChanged('componentCode')">
-            <label>Cấu phần xử lý</label><span>{{ diff.newData?.componentCode || '-' }}</span>
-        </div>
-        <div class="diff-field" [class.highlight]="isChanged('effectiveDate')">
-            <label>Ngày hiệu lực</label><span>{{ diff.newData?.effectiveDate | date:'dd/MM/yyyy HH:mm:ss' }}</span>
-        </div>
-        <div class="diff-field" [class.highlight]="isChanged('endEffectiveDate')">
-            <label>Ngày hết hiệu lực</label><span>{{ diff.newData?.endEffectiveDate | date:'dd/MM/yyyy HH:mm:ss'
-                }}</span>
-        </div>
-        <div class="diff-field" [class.highlight]="isChanged('description')">
-            <label>Mô tả</label><span>{{ diff.newData?.description || '-' }}</span>
-        </div>
+
+      </div>
     </div>
+
+    <!-- Dialog Footer -->
+    <div class="dialog-footer" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; gap: 12px;">
+      <!-- Left side: Delete button (only for IS_DISPLAY = 1) -->
+      <div>
+        <button *ngIf="showDelete" type="button" (click)="$event.stopPropagation(); delete()" class="btn-danger" style="height: 40px; padding: 0 20px;">
+          Xóa
+        </button>
+      </div>
+      
+      <!-- Right side: Action buttons -->
+      <div style="display: flex; gap: 12px;">
+        <button *ngIf="showSubmit" type="button" (click)="$event.stopPropagation(); submit()" class="btn-primary" style="height: 40px; padding: 0 20px;">
+          Gửi duyệt
+        </button>
+        <button *ngIf="showApproveReject" type="button" (click)="$event.stopPropagation(); reject()" class="btn-danger" style="height: 40px; padding: 0 20px;">
+          Từ chối
+        </button>
+        <button *ngIf="showApproveReject" type="button" (click)="$event.stopPropagation(); approve()" class="btn-primary" style="height: 40px; padding: 0 20px;">
+          Phê duyệt
+        </button>
+        <button *ngIf="showCancelApproval" type="button" (click)="$event.stopPropagation(); cancelApproval()" class="btn-danger" style="height: 40px; padding: 0 20px;">
+          Hủy phê duyệt
+        </button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div class="dialog-footer">
-    <button *ngIf="showDelete" tuiButton appearance="outline" (click)="delete()">Xóa</button>
-    <button *ngIf="showSubmit" tuiButton appearance="primary" (click)="submit()">Gửi duyệt</button>
-    <button *ngIf="showApproveReject" tuiButton appearance="outline" (click)="reject()">Từ chối</button>
-    <button *ngIf="showApproveReject" tuiButton appearance="primary" (click)="approve()">Phê duyệt</button>
-    <button *ngIf="showCancelApproval" tuiButton appearance="primary" (click)="cancelApproval()">Hủy phê duyệt</button>
-</div>
+<style>
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.detail-field {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.detail-field:last-child {
+  border-bottom: none;
+}
+
+.detail-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.detail-field .value {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.btn-close-x {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: white;
+  color: var(--gray-600);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-close-x:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-400);
+  color: var(--gray-800);
+}
+
+.detail-field.changed {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #FFC107;
+  padding-left: 12px;
+  margin-left: -12px;
+}
+
+.detail-field.changed .value {
+  color: #F57F17;
+  font-weight: 600;
+}
+</style>

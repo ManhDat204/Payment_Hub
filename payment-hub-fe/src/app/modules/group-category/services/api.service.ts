@@ -1,7 +1,7 @@
 // services/group-category-api.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import {
   GroupCategory, GroupCategoryFormValue, GroupCategoryDiff,
   ComponentOption, HistoryLog,
@@ -58,7 +58,7 @@ export class GroupCategoryApiService {
 
   /** Sửa — Lưu và gửi duyệt */
   updateAndSubmit(id: number, payload: GroupCategoryFormValue): Observable<GroupCategory> {
-    return this.http.put<GroupCategory>(`${BASE_URL}/${id}`, payload);
+    return this.update(id, payload).pipe(switchMap((updated) => this.submit(updated.id)));
   }
 
   /** Xóa (chỉ khi is_display = 1, tức chưa từng được duyệt) */
@@ -72,43 +72,43 @@ export class GroupCategoryApiService {
   }
 
   /** Gửi duyệt 1 bản ghi đã lưu nháp / bị từ chối */
-  submit(id: number, actor: string): Observable<GroupCategory> {
-    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/submit`, { actor });
+  submit(id: number): Observable<GroupCategory> {
+    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/submit`, {});
   }
 
   /** Gửi duyệt batch */
-  submitBatch(ids: number[], actor: string): Observable<GroupCategory[]> {
-    return this.http.post<GroupCategory[]>(`${BASE_URL}/submit`, { ids, actor });
+  submitBatch(ids: number[]): Observable<GroupCategory[]> {
+    return this.http.post<GroupCategory[]>(`${BASE_URL}/submit`, { ids });
   }
 
   /** Phê duyệt 1 bản ghi */
-  approve(id: number, actor: string): Observable<GroupCategory> {
-    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/approve`, { actor });
+  approve(id: number): Observable<GroupCategory> {
+    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/approve`, {});
   }
 
   /** Phê duyệt batch */
-  approveBatch(ids: number[], actor: string): Observable<GroupCategory[]> {
-    return this.http.post<GroupCategory[]>(`${BASE_URL}/approve`, { ids, actor });
+  approveBatch(ids: number[]): Observable<GroupCategory[]> {
+    return this.http.post<GroupCategory[]>(`${BASE_URL}/approve`, { ids });
   }
 
   /** Từ chối duyệt 1 bản ghi (kèm lý do) */
-  reject(id: number, actor: string, reason: string): Observable<GroupCategory> {
-    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/reject`, { actor, reason });
+  reject(id: number, reason: string): Observable<GroupCategory> {
+    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/reject`, { reason });
   }
 
   /** Từ chối duyệt batch (kèm lý do) */
-  rejectBatch(ids: number[], actor: string, reason: string): Observable<GroupCategory[]> {
-    return this.http.post<GroupCategory[]>(`${BASE_URL}/reject`, { ids, actor, reason });
+  rejectBatch(ids: number[], reason: string): Observable<GroupCategory[]> {
+    return this.http.post<GroupCategory[]>(`${BASE_URL}/reject`, { ids, reason });
   }
 
   /** Hủy duyệt 1 bản ghi đã Đã duyệt */
-  cancelApproval(id: number, actor: string): Observable<GroupCategory> {
-    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/cancel-approval`, { actor });
+  cancelApproval(id: number): Observable<GroupCategory> {
+    return this.http.post<GroupCategory>(`${BASE_URL}/${id}/cancel-approval`, {});
   }
 
   /** Hủy duyệt batch */
-  cancelApprovalBatch(ids: number[], actor: string): Observable<GroupCategory[]> {
-    return this.http.post<GroupCategory[]>(`${BASE_URL}/cancel-approval`, { ids, actor });
+  cancelApprovalBatch(ids: number[]): Observable<GroupCategory[]> {
+    return this.http.post<GroupCategory[]>(`${BASE_URL}/cancel-approval`, { ids });
   }
 
   /** Dropdown Cấu phần xử lý — tham chiếu PMH_COMPONENTS, IS_ACTIVE = 1 */
@@ -129,7 +129,7 @@ export class GroupCategoryApiService {
     if (filter.paramValue) params = params.set('paramValue', filter.paramValue);
     if (filter.paramName) params = params.set('paramName', filter.paramName);
     if (filter.statuses?.length) params = params.set('statuses', filter.statuses.join(','));
-    if (filter.isActiveList?.length) params = params.set('isActive', filter.isActiveList.join(','));
+    if (filter.isActiveList?.length) params = params.set('activeStatuses', filter.isActiveList.join(','));
     return this.http.get(`${BASE_URL}/export`, { params, responseType: 'blob' });
   }
 

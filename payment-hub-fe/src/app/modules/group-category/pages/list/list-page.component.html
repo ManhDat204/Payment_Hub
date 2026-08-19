@@ -1,46 +1,119 @@
-<div class="page-container">
-  <div class="page-wrapper">
-    <div class="page-header">
-      <div class="page-title-section">
-        <div class="page-breadcrumb">
-          <span>Trang chủ </span>
-          <span class="sep"> › </span>
-          <span>Tham số danh mục theo nhóm</span>
-        </div>
-        <h1 class="page-title">Tham số danh mục theo nhóm</h1>
+<div class="page-container" style="min-height: 100vh; overflow-y: scroll;">
+  <div class="page-wrapper" style="max-width: 100%; padding: 20px 24px;">
+    
+    <!-- Header Section -->
+    <div style="margin-bottom: 20px;">
+      <div class="page-breadcrumb">
+        <span>Trang chủ</span>
+        <span class="sep">›</span>
+        <span>Tham số danh mục theo nhóm</span>
       </div>
-
-      <div class="page-actions">
-        <button class="btn-add" (click)="onAddNew()">Thêm mới</button>
-      </div>
-    </div>
-
-    <div class="page-content">
-      <div class="content-section">
-        <app-group-category-search-filter (search)="onSearch($event)" (reset)="load()"></app-group-category-search-filter>
-      </div>
-
-      <div class="grid-section">
-        <div class="grid-toolbar">
-          <div class="grid-info">
-            Danh sách bản ghi
-            <span class="grid-record-count">({{ data?.total ?? 0 }})</span>
-          </div>
-
-          <div class="grid-actions">
-            <button class="toolbar-btn" type="button" (click)="onExport()">Xuất Excel</button>
-          </div>
-        </div>
-
-        <app-group-category-grid
-          [data]="data"
-          [loading]="loading"
-          [selectedIds]="selectedIds"
-          (rowDoubleClick)="onRowDoubleClick($event)"
-          (selectionChange)="onSelectionChange($event)"
-          (pageChange)="onPageChange($event)">
-        </app-group-category-grid>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+        <h1 class="page-title" style="margin: 0;">Tham số danh mục theo nhóm</h1>
+        <button (click)="onAddNew()" style="height: 34px; padding: 0 14px; background: #0b7b7d; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all 0.2s;"
+                (mouseenter)="$any($event.target).style.backgroundColor='#096668'"
+                (mouseleave)="$any($event.target).style.backgroundColor='#0b7b7d'">
+          + Thêm mới
+        </button>
       </div>
     </div>
+
+    <!-- Search Filter Section -->
+    <div style="margin-bottom: 20px;">
+      <app-group-category-search-filter 
+        (search)="onSearch($event)" 
+        (reset)="onReset()">
+      </app-group-category-search-filter>
+    </div>
+
+    <!-- Data Grid Section -->
+    <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden;">
+      <!-- Grid Toolbar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border-color); background-color: var(--gray-50);">
+        <div style="font-size: 14px; font-weight: 600; color: var(--gray-800);">
+          Danh sách bản ghi
+          <span style="color: var(--primary-color); margin-left: 4px;">({{ data?.totalElements ?? 0 }})</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+          <div *ngIf="selectedIds.size > 0" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 13px; color: var(--gray-700); font-weight: 600;">
+              Đã chọn {{ selectedIds.size }}
+            </span>
+            <button class="btn-secondary btn-sm" type="button" (click)="onBatchSubmit()">
+              Gửi duyệt
+            </button>
+            <button class="btn-secondary btn-sm" type="button" (click)="onBatchApprove()">
+              Phê duyệt
+            </button>
+            <button class="btn-secondary btn-sm" type="button" (click)="onBatchReject()">
+              Từ chối
+            </button>
+            <button class="btn-secondary btn-sm" type="button" (click)="onBatchCancelApproval()">
+              Hủy duyệt
+            </button>
+            <button class="btn-secondary btn-sm" type="button" (click)="onBatchDelete()" style="color: var(--status-rejected);">
+              Xóa
+            </button>
+          </div>
+          <button class="btn-secondary btn-sm" type="button" (click)="onExport()" [disabled]="exporting">
+            {{ exporting ? 'Đang xuất...' : 'Xuất Excel' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Data Grid -->
+      <app-group-category-grid
+        [data]="data"
+        [loading]="loading"
+        [selectedIds]="selectedIds"
+        (rowDoubleClick)="onRowDoubleClick($event)"
+        (selectionChange)="onSelectionChange($event)"
+        (pageChange)="onPageChange($event)"
+        (sortChange)="onSortChange($event)"
+        (edit)="onEdit($event)"
+        (copy)="onCopy($event)">
+      </app-group-category-grid>
+    </div>
+
   </div>
 </div>
+
+<!-- Confirm Dialogs -->
+<app-confirm-dialog 
+  *ngIf="showSubmitDialog"
+  [config]="submitDialogConfig"
+  (confirmed)="onSubmitConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showApproveDialog"
+  [config]="approveDialogConfig"
+  (confirmed)="onApproveConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showRejectDialog"
+  [config]="rejectDialogConfig"
+  (confirmed)="onRejectConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showCancelApprovalDialog"
+  [config]="cancelApprovalDialogConfig"
+  (confirmed)="onCancelApprovalConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showDeleteDialog"
+  [config]="deleteDialogConfig"
+  (confirmed)="onDeleteConfirmed($event)">
+</app-confirm-dialog>
+
+
+<!-- Detail Dialog -->
+<app-group-category-detail-dialog
+  *ngIf="showDetailDialog && selectedRecord"
+  [record]="selectedRecord"
+  [diff]="selectedDiff"
+  (action)="onDetailAction($event)">
+</app-group-category-detail-dialog>

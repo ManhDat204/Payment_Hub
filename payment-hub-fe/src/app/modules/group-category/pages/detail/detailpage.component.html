@@ -16,3 +16,28 @@
     </app-group-category-detail-dialog>
   </div>
 </div>
+
+<!-- Confirm Dialogs -->
+<app-confirm-dialog 
+  *ngIf="showSubmitDialog"
+  [config]="submitDialogConfig"
+  (confirmed)="onSubmitConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showApproveDialog"
+  [config]="approveDialogConfig"
+  (confirmed)="onApproveConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showRejectDialog"
+  [config]="rejectDialogConfig"
+  (confirmed)="onRejectConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showCancelApprovalDialog"
+  [config]="cancelApprovalDialogConfig"
+  (confirmed)="onCancelApprovalConfirmed($event)">
+</app-confirm-dialog>

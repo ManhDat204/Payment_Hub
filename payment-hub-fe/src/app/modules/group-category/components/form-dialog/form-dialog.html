@@ -1,68 +1,228 @@
-<div class="form-wrapper">
-    <!-- Header với tiêu đề và nút điều khiển -->
-    <div class="form-header">
-        <h3 class="form-title">Thêm mới tham số danh mục theo nhóm</h3>
-        <div class="form-actions">
-            <button type="button" class="btn-icon-close" title="Đóng" (click)="onCancel()">×</button>
-            <button type="button" class="btn btn-outline" [disabled]="submitting || !form.valid"
-                (click)="save()">Lưu</button>
-            <button type="button" class="btn btn-primary" [disabled]="submitting || !form.valid"
-                (click)="saveAndSubmit()">
-                Lưu và gửi duyệt
-            </button>
+<!-- Dialog Overlay -->
+<div class="dialog-overlay" (click)="onCancel()">
+  <div class="dialog" (click)="$event.stopPropagation()" style="max-width: 800px;">
+    
+    <!-- Dialog Header -->
+    <div class="dialog-header" style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button (click)="onCancel()" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: var(--text-secondary);">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <h2 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--gray-900);">
+            {{ title }} tham số danh mục theo nhóm
+          </h2>
         </div>
+        <button (click)="onCancel()" class="dialog-close">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <!-- Form container -->
-    <form [formGroup]="form" class="form-content">
-        <!-- Row 1: 4 cột (Danh mục, Giá trị, Tên, Cấu phần) -->
-        <div class="form-row-4col">
-            <div class="form-group">
-                <label>Danh mục theo nhóm <span class="required">*</span></label>
-                <input type="text" formControlName="paramType" class="form-control" placeholder="STATUS_TYPE" />
+    <!-- Dialog Body -->
+    <form [formGroup]="form" style="display: flex; flex-direction: column;">
+      <div class="dialog-body" style="padding: 12px 24px; overflow-y: auto; max-height: calc(90vh - 180px);">
+        
+        <!-- First Row: 4 columns -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px;">
+          <!-- Danh mục theo nhóm -->
+          <div>
+            <label class="required" style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+              Danh mục theo nhóm
+            </label>
+            <input formControlName="paramType" 
+                   type="text" 
+                   placeholder="Nhập nội dung"
+                   [class.error]="form.get('paramType')?.invalid && form.get('paramType')?.touched"
+                   style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; font-size: 14px;" />
+            <div *ngIf="form.get('paramType')?.invalid && form.get('paramType')?.touched" style="color: var(--status-rejected); font-size: 12px; margin-top: 4px;">
+              Trường bắt buộc
             </div>
+          </div>
 
-            <div class="form-group">
-                <label>Giá trị thành phần <span class="required">*</span></label>
-                <input type="text" formControlName="paramValue" class="form-control" placeholder="01" />
+          <!-- Giá trị thành phần -->
+          <div>
+            <label class="required" style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+              Giá trị thành phần
+            </label>
+            <input formControlName="paramValue" 
+                   type="text" 
+                   placeholder="Nhập nội dung"
+                   [class.error]="form.get('paramValue')?.invalid && form.get('paramValue')?.touched"
+                   style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; font-size: 14px;" />
+            <div *ngIf="form.get('paramValue')?.invalid && form.get('paramValue')?.touched" style="color: var(--status-rejected); font-size: 12px; margin-top: 4px;">
+              Trường bắt buộc
             </div>
+          </div>
 
-            <div class="form-group">
-                <label>Tên thành phần <span class="required">*</span></label>
-                <input type="text" formControlName="paramName" class="form-control" placeholder="" />
+          <!-- Tên thành phần -->
+          <div>
+            <label class="required" style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+              Tên thành phần
+            </label>
+            <input formControlName="paramName" 
+                   type="text" 
+                   placeholder="Nhập nội dung"
+                   [class.error]="form.get('paramName')?.invalid && form.get('paramName')?.touched"
+                   style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; font-size: 14px;" />
+            <div *ngIf="form.get('paramName')?.invalid && form.get('paramName')?.touched" style="color: var(--status-rejected); font-size: 12px; margin-top: 4px;">
+              Trường bắt buộc
             </div>
+          </div>
 
-            <div class="form-group">
-                <label>Cấu phần xử lý <span class="required">*</span></label>
-                <select formControlName="componentCode" class="form-control">
-                    <option value="" disabled>TRA</option>
-                    <option *ngFor="let option of componentOptions" [value]="option.componentCode">
-                        {{ option.componentName }}
-                    </option>
-                </select>
+          <!-- Cấu phần xử lý -->
+          <div>
+            <label class="required" style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+              Cấu phần xử lý
+            </label>
+            <select formControlName="componentCode"
+                    [class.error]="form.get('componentCode')?.invalid && form.get('componentCode')?.touched"
+                    style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; font-size: 14px; cursor: pointer;">
+              <option value="">Chọn giá trị</option>
+              <option *ngFor="let opt of componentOptions" [value]="opt.componentCode">
+                {{ opt.componentCode }}{{ opt.componentName ? ' - ' + opt.componentName : '' }}
+              </option>
+            </select>
+            <div *ngIf="form.get('componentCode')?.invalid && form.get('componentCode')?.touched" style="color: var(--status-rejected); font-size: 12px; margin-top: 4px;">
+              Trường bắt buộc
             </div>
+          </div>
         </div>
 
-        <!-- Row 2: 2 cột (Ngày hiệu lực) -->
-        <div class="form-row-2col">
-            <div class="form-group">
-                <label>Ngày hiệu lực <span class="required">*</span></label>
-                <input type="text" formControlName="effectiveDate" class="form-control" placeholder="dd/mm/yyyy" />
+        <!-- Second Row: 2 columns for dates -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px;">
+          <!-- Ngày hiệu lực -->
+          <div>
+            <label class="required" style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+              Ngày hiệu lực
+            </label>
+            <input formControlName="effectiveDate" 
+                   type="datetime-local"
+                   [class.error]="form.get('effectiveDate')?.invalid && form.get('effectiveDate')?.touched"
+                   style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; font-size: 14px;" />
+            <div *ngIf="form.get('effectiveDate')?.hasError('required') && form.get('effectiveDate')?.touched" style="color: var(--status-rejected); font-size: 12px; margin-top: 4px;">
+              Trường bắt buộc
             </div>
+            <div *ngIf="form.get('effectiveDate')?.hasError('pastDate') && form.get('effectiveDate')?.touched" style="color: var(--status-rejected); font-size: 12px; margin-top: 4px;">
+              Ngày hiệu lực không được là ngày quá khứ
+            </div>
+          </div>
 
-            <div class="form-group">
-                <label>Ngày hết hiệu lực</label>
-                <input type="text" formControlName="endEffectiveDate" class="form-control" placeholder="dd/mm/yyyy" />
-            </div>
+          <!-- Ngày hết hiệu lực -->
+          <div>
+            <label style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+              Ngày hết hiệu lực
+            </label>
+            <input formControlName="endEffectiveDate" 
+                   type="datetime-local"
+                   style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; font-size: 14px;" />
+          </div>
         </div>
 
-        <!-- Row 3: Mô tả (full width) -->
-        <div class="form-row-full">
-            <div class="form-group">
-                <label>Mô tả</label>
-                <textarea formControlName="description" class="form-control" rows="3"
-                    placeholder="TRẠNG THÁI XỬ LÝ TẠI FRONTEND"></textarea>
-            </div>
+        <!-- Third Row: Full width for Mô tả -->
+        <div>
+          <label style="display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+            Mô tả
+          </label>
+          <textarea formControlName="description"
+                    placeholder="Nhập nội dung"
+                    rows="3"
+                    style="width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; resize: vertical; font-family: inherit;"></textarea>
         </div>
+
+      </div>
+
+      <!-- Dialog Footer -->
+      <div class="dialog-footer" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" (click)="onCancel()" class="btn-cancel" style="height: 44px; width: 44px; padding: 0; display: flex; align-items: center; justify-content: center; background: white; border: 2px solid #E5E7EB; border-radius: 8px; cursor: pointer; color: #6B7280; transition: all 0.2s;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button type="button" (click)="save()" class="btn-save" style="height: 44px; padding: 0 24px; display: flex; align-items: center; gap: 8px; background: white; border: 2px solid #0B7B7D; border-radius: 8px; cursor: pointer; color: #0B7B7D; font-size: 14px; font-weight: 600; min-width: 120px; justify-content: center; transition: all 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+            <path d="M12.6667 2H3.33333C2.59695 2 2 2.59695 2 3.33333V12.6667C2 13.403 2.59695 14 3.33333 14H12.6667C13.403 14 14 13.403 14 12.6667V3.33333C14 2.59695 13.403 2 12.6667 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11.3333 2V5.33333H4.66667V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Lưu
+        </button>
+        <button type="button" (click)="saveAndSubmit()" class="btn-primary" style="height: 44px; padding: 0 24px; display: flex; align-items: center; gap: 8px; background: #0B7B7D; border: 2px solid #0B7B7D; border-radius: 8px; cursor: pointer; color: white; font-size: 14px; font-weight: 600; min-width: 180px; justify-content: center; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+            <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Lưu và gửi duyệt
+        </button>
+      </div>
     </form>
+
+  </div>
 </div>
+
+<style>
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+input.error,
+select.error {
+  border-color: var(--status-rejected) !important;
+}
+
+label.required::after {
+  content: ' *';
+  color: var(--status-rejected);
+}
+
+.btn-cancel:hover {
+  background: #F3F4F6 !important;
+  border-color: #D1D5DB !important;
+}
+
+.btn-save:hover {
+  background: #F0F9F9 !important;
+}
+
+.btn-primary:hover {
+  background: #096D6F !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+button.btn-save,
+button.btn-primary {
+  opacity: 1 !important;
+  cursor: pointer !important;
+}
+</style>

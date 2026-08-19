@@ -1,14 +1,204 @@
-<!-- confirm-dialog.component.html -->
-<div class="dialog-header">
-    <h3>{{ title }}</h3>
-    <button tuiIconButton icon="tuiIconClose" (click)="cancel()"></button>
+<!-- Dialog Overlay -->
+<div class="dialog-overlay" *ngIf="isVisible" (click)="cancel()">
+  <div class="dialog-box" (click)="$event.stopPropagation()">
+    
+    <!-- Icon + Title -->
+    <div class="dialog-header">
+      <div class="dialog-icon" [ngClass]="'icon-' + config.icon">
+        <svg *ngIf="config.icon === 'warning'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <svg *ngIf="config.icon === 'question'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M12 13.5V13C12 11.8954 12.8954 11 14 11C15.1046 11 16 10.1046 16 9C16 7.89543 15.1046 7 14 7H13.5C12.3954 7 11.5 7.89543 11.5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <svg *ngIf="config.icon === 'info'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="dialog-title">{{ config.title }}</h3>
+    </div>
+
+    <!-- Message -->
+    <p class="dialog-message">{{ config.message }}</p>
+
+    <!-- Input Field (optional) -->
+    <div *ngIf="config.showInput" class="dialog-input-group">
+      <label *ngIf="config.inputLabel" class="input-label">{{ config.inputLabel }}</label>
+      <input 
+        type="text" 
+        [(ngModel)]="inputValue"
+        [placeholder]="config.inputPlaceholder || ''"
+        class="dialog-input"
+        autofocus
+      />
+    </div>
+
+    <!-- Actions -->
+    <div class="dialog-actions">
+      <button type="button" (click)="cancel()" class="btn-cancel">
+        {{ config.cancelText || 'Hủy' }}
+      </button>
+      <button type="button" (click)="confirm()" class="btn-confirm">
+        {{ config.confirmText || 'Xác nhận' }}
+      </button>
+    </div>
+
+  </div>
 </div>
 
-<div class="dialog-content">
-    <p>{{ message }}</p>
-</div>
+<style>
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
 
-<div class="dialog-footer">
-    <button tuiButton appearance="outline" (click)="cancel()">Hủy bỏ</button>
-    <button tuiButton appearance="primary" (click)="confirm()">Xác nhận</button>
-</div>
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog-box {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 460px;
+  padding: 24px;
+  animation: slideUp 0.25s ease;
+  position: relative;
+  z-index: 3001;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dialog-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-warning {
+  background: #fef3c7;
+  color: #f59e0b;
+}
+
+.icon-question {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.icon-info {
+  background: #e0e7ff;
+  color: #6366f1;
+}
+
+.dialog-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.dialog-message {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+}
+
+.dialog-input-group {
+  margin-bottom: 20px;
+}
+
+.input-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.dialog-input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dialog-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.dialog-input::placeholder {
+  color: #9ca3af;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-cancel,
+.btn-confirm {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn-confirm {
+  background: #10b981;
+  color: white;
+}
+
+.btn-confirm:hover {
+  background: #059669;
+}
+</style>

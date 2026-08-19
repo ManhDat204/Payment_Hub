@@ -1,7 +1,5 @@
-/* Import Theme */
 @import './app/styles/theme.css';
 
-/* Global Styles */
 * {
   box-sizing: border-box;
 }

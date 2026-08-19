@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GroupCategory } from '../models/model';
 
@@ -25,11 +26,15 @@ export class GroupCategoryNavigationService {
 
   navigation$: Observable<NavigationState> = this.navigationSubject.asObservable();
 
+  constructor(private router: Router) {}
+
   getCurrentState(): NavigationState {
     return this.navigationSubject.value;
   }
 
   navigateToList(selectedIds?: Set<number>): void {
+    console.log('🔵 NavigationService.navigateToList() called');
+    console.trace('🔍 Call stack:');
     this.navigationSubject.next({
       mode: 'list',
       selectedIds: selectedIds || new Set(),

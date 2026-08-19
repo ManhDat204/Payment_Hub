@@ -8,36 +8,29 @@
     </div>
 
     <nav class="nav-menu" aria-label="Sidebar navigation">
+      <div class="nav-section-title">Cấu phần xử lý</div>
       <button class="nav-item active">
-        <span class="nav-icon">◧</span>
         <span>Tham số danh mục theo nhóm</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◧</span>
         <span>Kênh thanh toán</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◧</span>
         <span>Mã loại điện trả soát</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◧</span>
         <span>Tiêu chí phản hàn kênh</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◧</span>
         <span>Tạm dừng phán kênh</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◧</span>
         <span>Cấu hình dừng tuyến kênh...</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◧</span>
         <span>Kênh phân phối ứng dụng</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◧</span>
         <span>Tiêu chí chấm điểm kho...</span>
       </button>
     </nav>
@@ -49,12 +42,18 @@
       <div class="topbar-actions">
         <button class="icon-btn" aria-label="Notifications">🔔</button>
         <div class="language-select">VIE ▾</div>
-        <div class="user-box">
+        <div class="user-box" style="position: relative;">
           <div class="avatar">H</div>
           <div class="user-meta">
             <div class="user-name">Hoàng Văn Thuận</div>
             <div class="user-role">Chuyên viên</div>
           </div>
+          <button (click)="onLogout()" 
+                  class="logout-btn"
+                  style="margin-left: 12px; padding: 6px 12px; font-size: 12px; border: 1px solid #E5E7EB; border-radius: 4px; background: white; color: #6B7280; cursor: pointer; transition: all 0.2s;"
+                  title="Đăng xuất">
+            Đăng xuất
+          </button>
         </div>
       </div>
     </header>
@@ -64,3 +63,5 @@
     </div>
   </main>
 </div>
+
+<app-toast></app-toast>

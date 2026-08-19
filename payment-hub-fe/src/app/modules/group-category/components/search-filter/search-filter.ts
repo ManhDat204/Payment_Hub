@@ -5,16 +5,18 @@ import { GroupCategoryFilter } from '../../models/filter.model';
 import { IsActive, ParamStatus, ParamStatusLabel } from '../../models/status.enum';
 
 interface Option<T> {
-  value: T | null;
+  value: T;
   label: string;
 }
 
 @Component({
   selector: 'app-group-category-search-filter',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule
+  ],
   templateUrl: './search-filter.html',
-  styleUrls: ['./search-filter.scss'],
 })
 export class SearchFilterComponent {
   @Output() search = new EventEmitter<GroupCategoryFilter>();
@@ -23,42 +25,94 @@ export class SearchFilterComponent {
   readonly ALL_OPTION_LABEL = 'Tất cả';
 
   readonly statusItems: Option<ParamStatus>[] = [
-    { value: null, label: this.ALL_OPTION_LABEL },
     ...Object.values(ParamStatus)
       .filter((value): value is ParamStatus => typeof value === 'number')
       .map((value) => ({ value, label: ParamStatusLabel[value] })),
   ];
 
   readonly isActiveItems: Option<IsActive>[] = [
-    { value: null, label: this.ALL_OPTION_LABEL },
     { value: IsActive.ACTIVE, label: 'Hoạt động' },
     { value: IsActive.INACTIVE, label: 'Không hoạt động' },
   ];
 
   readonly form: FormGroup;
+  statusDropdownOpen = false;
+  isActiveDropdownOpen = false;
 
   constructor(private readonly fb: FormBuilder) {
     this.form = this.fb.group({
       paramType: [''],
       paramValue: [''],
       paramName: [''],
-      status: [this.statusItems[0]],
-      isActiveOpt: [this.isActiveItems[0]],
+      statuses: [[] as ParamStatus[]],
+      isActiveList: [[] as IsActive[]],
     });
   }
 
-  readonly statusLabelFn = (item: Option<ParamStatus> | null) => item?.label ?? this.ALL_OPTION_LABEL;
-  readonly isActiveLabelFn = (item: Option<IsActive> | null) => item?.label ?? this.ALL_OPTION_LABEL;
+  get statusText(): string {
+    return this.formatSelectedLabels(this.statusItems, this.selectedStatuses);
+  }
+
+  get isActiveText(): string {
+    return this.formatSelectedLabels(this.isActiveItems, this.selectedActiveStatuses);
+  }
+
+  get selectedStatuses(): ParamStatus[] {
+    return this.form.get('statuses')?.value ?? [];
+  }
+
+  get selectedActiveStatuses(): IsActive[] {
+    return this.form.get('isActiveList')?.value ?? [];
+  }
+
+  toggleStatusDropdown(): void {
+    this.statusDropdownOpen = !this.statusDropdownOpen;
+    this.isActiveDropdownOpen = false;
+  }
+
+  toggleIsActiveDropdown(): void {
+    this.isActiveDropdownOpen = !this.isActiveDropdownOpen;
+    this.statusDropdownOpen = false;
+  }
+
+  clearStatuses(): void {
+    this.form.patchValue({ statuses: [] });
+  }
+
+  clearActiveStatuses(): void {
+    this.form.patchValue({ isActiveList: [] });
+  }
+
+  isStatusSelected(value: ParamStatus): boolean {
+    return this.selectedStatuses.includes(value);
+  }
+
+  isActiveSelected(value: IsActive): boolean {
+    return this.selectedActiveStatuses.includes(value);
+  }
+
+  toggleStatus(value: ParamStatus, checked: boolean): void {
+    this.form.patchValue({
+      statuses: this.toggleValue(this.selectedStatuses, value, checked),
+    });
+  }
+
+  toggleActiveStatus(value: IsActive, checked: boolean): void {
+    this.form.patchValue({
+      isActiveList: this.toggleValue(this.selectedActiveStatuses, value, checked),
+    });
+  }
 
   onSearch(): void {
-    const { status, isActiveOpt, ...rest } = this.form.value;
+    const { statuses, isActiveList, ...rest } = this.form.value;
     this.search.emit({
       ...rest,
-      statuses: status?.value != null ? [status.value] : [],
-      isActiveList: isActiveOpt?.value != null ? [isActiveOpt.value] : [],
+      statuses: statuses ?? [],
+      isActiveList: isActiveList ?? [],
       page: 1,
       pageSize: 20,
     } as GroupCategoryFilter);
+    this.closeDropdowns();
   }
 
   onReset(): void {
@@ -66,9 +120,30 @@ export class SearchFilterComponent {
       paramType: '',
       paramValue: '',
       paramName: '',
-      status: this.statusItems[0],
-      isActiveOpt: this.isActiveItems[0],
+      statuses: [],
+      isActiveList: [],
     });
+    this.closeDropdowns();
     this.reset.emit();
+  }
+
+  private toggleValue<T>(items: T[], value: T, checked: boolean): T[] {
+    const selected = new Set(items);
+    checked ? selected.add(value) : selected.delete(value);
+    return Array.from(selected);
+  }
+
+  private formatSelectedLabels<T>(items: Option<T>[], selectedValues: T[]): string {
+    if (!selectedValues.length) return this.ALL_OPTION_LABEL;
+
+    return items
+      .filter((item) => selectedValues.includes(item.value))
+      .map((item) => item.label)
+      .join(', ');
+  }
+
+  private closeDropdowns(): void {
+    this.statusDropdownOpen = false;
+    this.isActiveDropdownOpen = false;
   }
 }

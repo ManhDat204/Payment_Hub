@@ -6,7 +6,6 @@ import { HistoryDialogComponent } from '../../components/history-dialog/history-
 @Component({
   selector: 'app-group-category-history-page',
   templateUrl: './historypage.component.html',
-  styleUrls: ['./historypage.component.css'],
   standalone: true,
   imports: [CommonModule, HistoryDialogComponent],
 })
@@ -32,4 +31,8 @@ export class GroupCategoryHistoryPageComponent implements OnInit {
   onBack(): void {
     this.navigationService.navigateToList();
   }
+
+
+  
+  
 }

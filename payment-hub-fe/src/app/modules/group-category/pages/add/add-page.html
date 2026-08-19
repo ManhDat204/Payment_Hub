@@ -1,13 +1,200 @@
-<div class="page-container">
+<!-- Page Container -->
+<div style="min-height: 100vh; background: var(--background-secondary); padding: 16px 20px;">
+  
   <!-- Breadcrumb -->
-  <div class="breadcrumb">
-    <span class="crumb" (click)="onBack()">Trang chủ</span>
-    <span class="sep">›</span>
-    <span class="crumb" (click)="onBack()">Tham số danh mục theo nhóm</span>
-    <span class="sep">›</span>
-    <span class="crumb"> Thêm mới</span>
+  <div style="margin-bottom: 10px;">
+    <div class="page-breadcrumb">
+      <span style="cursor: pointer;" (click)="onBack()">Trang chủ</span>
+      <span class="sep">›</span>
+      <span style="cursor: pointer;" (click)="onBack()">Tham số danh mục theo nhóm</span>
+      <span class="sep">›</span>
+      <span>{{ breadcrumbLast }}</span>
+    </div>
   </div>
 
-  <!-- Form -->
-  <app-form-dialog [mode]="mode" [source]="source || undefined" (saved)="onSaved($event)"></app-form-dialog>
+  <!-- Page Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button (click)="onBack()" style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: #111827;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1 class="page-title" style="margin: 0;">{{ pageTitle }}</h1>
+    </div>
+    
+    <!-- Action Buttons in Header -->
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button (click)="onBack()" style="width: 26px; height: 26px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: #6B7280;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button type="button" 
+              (click)="save()" 
+              style="height: 34px; padding: 0 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: white; border: 1.5px solid #0B7B7D; color: #0B7B7D;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M5 2V5H11V2" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        Lưu
+      </button>
+      <button type="button" 
+              (click)="saveAndSubmit()" 
+              style="height: 34px; padding: 0 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #0B7B7D; border: none; color: white;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Lưu và gửi duyệt
+      </button>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; box-shadow: var(--shadow-md);">
+    <form [formGroup]="form">
+    
+      <!-- First Row: 4 columns -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 14px; margin-bottom: 8px;">
+        <!-- Danh mục theo nhóm -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin: 0;">
+            Danh mục theo nhóm <span style="color: var(--danger-color);">*</span>
+          </label>
+          <input formControlName="paramType" 
+                 type="text" 
+                 placeholder="Nhập nội dung"
+                 style="width: 100%; height: 36px; border: 1px solid #dfe3e8; border-radius: 6px; background: #f8fafc; padding: 0 10px; font-size: 13px; color: var(--text-primary); transition: all 0.2s;"
+                 (focus)="$any($event.target).style.borderColor='#0b7b7d'; $any($event.target).style.boxShadow='0 0 0 3px rgba(11,123,125,0.12)'; $any($event.target).style.backgroundColor='#ffffff'"
+                 (blur)="$any($event.target).style.borderColor='#dfe3e8'; $any($event.target).style.boxShadow='none'; $any($event.target).style.backgroundColor='#f8fafc'" />
+          <div style="font-size: 11px; min-height: 12px;">
+            <span *ngIf="form.get('paramType')?.invalid && form.get('paramType')?.touched" style="color: #EF4444;">Trường bắt buộc</span>
+          </div>
+        </div>
+
+        <!-- Giá trị thành phần -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin: 0;">
+            Giá trị thành phần <span style="color: var(--danger-color);">*</span>
+          </label>
+          <input formControlName="paramValue" 
+                 type="text" 
+                 placeholder="Nhập nội dung"
+                 style="width: 100%; height: 36px; border: 1px solid #dfe3e8; border-radius: 6px; background: #f8fafc; padding: 0 10px; font-size: 13px; color: var(--text-primary); transition: all 0.2s;"
+                 (focus)="$any($event.target).style.borderColor='#0b7b7d'; $any($event.target).style.boxShadow='0 0 0 3px rgba(11,123,125,0.12)'; $any($event.target).style.backgroundColor='#ffffff'"
+                 (blur)="$any($event.target).style.borderColor='#dfe3e8'; $any($event.target).style.boxShadow='none'; $any($event.target).style.backgroundColor='#f8fafc'" />
+          <div style="font-size: 11px; min-height: 12px;">
+            <span *ngIf="form.get('paramValue')?.invalid && form.get('paramValue')?.touched" style="color: #EF4444;">Trường bắt buộc</span>
+          </div>
+        </div>
+
+        <!-- Tên thành phần -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin: 0;">
+            Tên thành phần <span style="color: var(--danger-color);">*</span>
+          </label>
+          <input formControlName="paramName" 
+                 type="text" 
+                 placeholder="Nhập nội dung"
+                 style="width: 100%; height: 36px; border: 1px solid #dfe3e8; border-radius: 6px; background: #f8fafc; padding: 0 10px; font-size: 13px; color: var(--text-primary); transition: all 0.2s;"
+                 (focus)="$any($event.target).style.borderColor='#0b7b7d'; $any($event.target).style.boxShadow='0 0 0 3px rgba(11,123,125,0.12)'; $any($event.target).style.backgroundColor='#ffffff'"
+                 (blur)="$any($event.target).style.borderColor='#dfe3e8'; $any($event.target).style.boxShadow='none'; $any($event.target).style.backgroundColor='#f8fafc'" />
+          <div style="font-size: 11px; min-height: 12px;">
+            <span *ngIf="form.get('paramName')?.invalid && form.get('paramName')?.touched" style="color: #EF4444;">
+              <span *ngIf="form.get('paramName')?.errors?.['required']">Trường bắt buộc</span>
+              <span *ngIf="form.get('paramName')?.errors?.['minlength']">Tối thiểu 3 ký tự</span>
+              <span *ngIf="form.get('paramName')?.errors?.['maxlength']">Tối đa 255 ký tự</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Cấu phần xử lý -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin: 0;">
+            Cấu phần xử lý <span style="color: var(--danger-color);">*</span>
+          </label>
+          <select formControlName="componentCode"
+                  style="width: 100%; height: 36px; border: 1px solid #dfe3e8; border-radius: 6px; background: #f8fafc; padding: 0 10px; font-size: 13px; color: var(--text-primary); cursor: pointer; transition: all 0.2s;"
+                  (focus)="$any($event.target).style.borderColor='#0b7b7d'; $any($event.target).style.boxShadow='0 0 0 3px rgba(11,123,125,0.12)'; $any($event.target).style.backgroundColor='#ffffff'"
+                  (blur)="$any($event.target).style.borderColor='#dfe3e8'; $any($event.target).style.boxShadow='none'; $any($event.target).style.backgroundColor='#f8fafc'">
+            <option value="">Chọn giá trị</option>
+            <option *ngFor="let opt of componentOptions" [value]="opt.componentCode">{{ opt.componentCode }}</option>
+          </select>
+          <div style="font-size: 11px; min-height: 12px;">
+            <span *ngIf="form.get('componentCode')?.invalid && form.get('componentCode')?.touched" style="color: #EF4444;">Trường bắt buộc</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second Row: 2 columns for dates -->
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 14px; margin-bottom: 8px;">
+        <!-- Ngày hiệu lực -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin: 0;">
+            Ngày hiệu lực <span style="color: var(--danger-color);">*</span>
+          </label>
+          <input formControlName="effectiveDate" 
+                 type="datetime-local"
+                 [style.border-color]="form.get('effectiveDate')?.invalid && form.get('effectiveDate')?.touched ? 'var(--status-rejected)' : '#dfe3e8'"
+                 style="width: 100%; height: 36px; border: 1px solid; border-radius: 6px; background: #f8fafc; padding: 0 10px; font-size: 13px; color: var(--text-primary); transition: all 0.2s;"
+                 (focus)="$any($event.target).style.borderColor='#0b7b7d'; $any($event.target).style.boxShadow='0 0 0 3px rgba(11,123,125,0.12)'; $any($event.target).style.backgroundColor='#ffffff'"
+                 (blur)="$any($event.target).style.borderColor='#dfe3e8'; $any($event.target).style.boxShadow='none'; $any($event.target).style.backgroundColor='#f8fafc'" />
+          <div style="font-size: 11px; min-height: 12px;">
+            <span *ngIf="form.get('effectiveDate')?.hasError('required') && form.get('effectiveDate')?.touched" style="color: #EF4444;">Trường bắt buộc</span>
+            <span *ngIf="form.get('effectiveDate')?.hasError('pastDate') && form.get('effectiveDate')?.touched" style="color: #EF4444;">Ngày hiệu lực không được là ngày quá khứ</span>
+          </div>
+        </div>
+
+        <!-- Ngày hết hiệu lực -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin: 0;">
+            Ngày hết hiệu lực
+          </label>
+          <input formControlName="endEffectiveDate" 
+                 type="datetime-local"
+                 [style.border-color]="(form.get('endEffectiveDate')?.invalid && form.get('endEffectiveDate')?.touched) || (form.hasError('endBeforeEffective') && form.get('endEffectiveDate')?.touched) ? 'var(--status-rejected)' : '#dfe3e8'"
+                 style="width: 100%; height: 36px; border: 1px solid; border-radius: 6px; background: #f8fafc; padding: 0 10px; font-size: 13px; color: var(--text-primary); transition: all 0.2s;"
+                 (focus)="$any($event.target).style.borderColor='#0b7b7d'; $any($event.target).style.boxShadow='0 0 0 3px rgba(11,123,125,0.12)'; $any($event.target).style.backgroundColor='#ffffff'"
+                 (blur)="$any($event.target).style.borderColor='#dfe3e8'; $any($event.target).style.boxShadow='none'; $any($event.target).style.backgroundColor='#f8fafc'" />
+          <div style="font-size: 11px; min-height: 12px;">
+            <span *ngIf="form.get('endEffectiveDate')?.hasError('pastDate') && form.get('endEffectiveDate')?.touched" style="color: #EF4444;">Ngày hết hiệu lực không được là ngày quá khứ</span>
+            <span *ngIf="form.hasError('endBeforeEffective') && form.get('endEffectiveDate')?.touched" style="color: #EF4444;">Ngày hết hiệu lực phải lớn hơn hoặc bằng ngày hiệu lực</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Third Row: Full width for Mô tả -->
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin: 0;">
+          Mô tả
+        </label>
+        <textarea formControlName="description"
+                  placeholder="Nhập nội dung"
+                  rows="3"
+                  style="width: 100%; border: 1px solid #dfe3e8; border-radius: 6px; background: #f8fafc; padding: 10px; font-size: 13px; resize: vertical; font-family: inherit; color: var(--text-primary); transition: all 0.2s;"
+                  (focus)="$any($event.target).style.borderColor='#0b7b7d'; $any($event.target).style.boxShadow='0 0 0 3px rgba(11,123,125,0.12)'; $any($event.target).style.backgroundColor='#ffffff'"
+                  (blur)="$any($event.target).style.borderColor='#dfe3e8'; $any($event.target).style.boxShadow='none'; $any($event.target).style.backgroundColor='#f8fafc'"></textarea>
+        <div style="color: #9CA3AF; font-size: 11px; min-height: 12px;"></div>
+      </div>
+
+    </form>
+  </div>
+
 </div>
+
+<style>
+input::placeholder,
+textarea::placeholder {
+  color: #9CA3AF;
+}
+
+button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+input:disabled {
+  background: #eef2f6 !important;
+  color: #64748b !important;
+}
+</style>

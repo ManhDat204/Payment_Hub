@@ -12,7 +12,6 @@ export interface FormDialogData {
 @Component({
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.html',
-  styleUrls: ['./form-dialog.scss'],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
 })
@@ -81,44 +80,50 @@ export class FormDialogComponent implements OnInit {
     this.api.getComponentOptions().subscribe({
       next: (options) => {
         this.componentOptions = options;
+        console.log('Component options loaded:', options);
       },
-      error: () => {
+      error: (err) => {
+        console.error('Failed to load component options, using fallback:', err);
         this.componentOptions = [
-          { componentCode: 'TRA', componentName: 'TRA - Trạng thái xử lý' },
-          { componentCode: 'IFRT', componentName: 'IFRT - International Fund Transfer' },
-          { componentCode: 'CRP', componentName: 'CRP - Corporate Payment' },
-          { componentCode: 'RETAIL', componentName: 'RETAIL - Retail Payment' },
+          { componentCode: 'TRA', componentName: 'Trạng thái xử lý' },
+          { componentCode: 'IFRT', componentName: 'International Fund Transfer' },
+          { componentCode: 'CRP', componentName: 'Corporate Payment' },
+          { componentCode: 'RETAIL', componentName: 'Retail Payment' },
         ];
       }
     });
   }
 
   save(): void {
-    if (this.form.valid) {
-      const formValue = this.form.value as GroupCategoryFormValue;
-      const result: GroupCategory = {
-        id: this.source?.id || 0,
-        ...formValue,
-        endEffectiveDate: formValue.endEffectiveDate || undefined,
-        status: this.source?.status || 1,
-        isActive: this.source?.isActive || 1,
-      };
-      this.saved.emit(result);
+    if (!this.form.valid) {
+      this.form.markAllAsTouched();
+      return;
     }
+    const formValue = this.form.value as GroupCategoryFormValue;
+    const result: GroupCategory = {
+      id: this.source?.id || 0,
+      ...formValue,
+      endEffectiveDate: formValue.endEffectiveDate || undefined,
+      status: this.source?.status || 1,
+      isActive: this.source?.isActive || 1,
+    };
+    this.saved.emit(result);
   }
 
   saveAndSubmit(): void {
-    if (this.form.valid) {
-      const formValue = this.form.value as GroupCategoryFormValue;
-      const result: GroupCategory = {
-        id: this.source?.id || 0,
-        ...formValue,
-        endEffectiveDate: formValue.endEffectiveDate || undefined,
-        status: 3,
-        isActive: this.source?.isActive || 1,
-      };
-      this.saved.emit(result);
+    if (!this.form.valid) {
+      this.form.markAllAsTouched();
+      return;
     }
+    const formValue = this.form.value as GroupCategoryFormValue;
+    const result: GroupCategory = {
+      id: this.source?.id || 0,
+      ...formValue,
+      endEffectiveDate: formValue.endEffectiveDate || undefined,
+      status: 3,
+      isActive: this.source?.isActive || 1,
+    };
+    this.saved.emit(result);
   }
 
   onCancel(): void {

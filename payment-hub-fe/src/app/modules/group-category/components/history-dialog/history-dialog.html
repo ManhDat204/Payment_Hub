@@ -10,8 +10,8 @@
             <th tuiTh>Nội dung</th>
         </tr>
     </thead>
-    <tbody tuiTbody [data]="data?.items ?? []">
-        <tr *ngFor="let log of data?.items" tuiTr>
+    <tbody tuiTbody [data]="data?.content ?? []">
+        <tr *ngFor="let log of data?.content" tuiTr>
             <td tuiTd>{{ log.userName }}</td>
             <td tuiTd>{{ log.actionAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
             <td tuiTd>{{ log.action }}</td>
@@ -20,4 +20,8 @@
         </tr>
     </tbody>
 </table>
-<tui-pagination [length]="data?.total ?? 0" [pageSize]="pageSize" (indexChange)="onPageChange($event)"></tui-pagination>
+<tui-pagination
+    [length]="data?.totalPages ?? 0"
+    [pageSize]="pageSize"
+    (indexChange)="onPageChange($event)">
+</tui-pagination>

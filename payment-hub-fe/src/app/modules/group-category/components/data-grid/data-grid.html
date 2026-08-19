@@ -1,77 +1,213 @@
-<div class="data-grid">
-    <div class="grid-content">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 40px;"><input type="checkbox" (change)="toggleAll($event.target.checked)"
-                            title="Chọn tất cả"></th>
-                    <th style="width: 50px;">STT</th>
-                    <th>Danh mục theo nhóm</th>
-                    <th>Giá trị thành phần</th>
-                    <th>Tên thành phần</th>
-                    <th>Mô tả</th>
-                    <th>Cấu phần xử lý</th>
-                    <th>Ngày hiệu lực</th>
-                    <th>Ngày hết hiệu lực</th>
-                    <th>Trạng thái tham số</th>
-                    <th>Trạng thái hoạt động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <ng-container *ngIf="!loading && (!data?.content || data.content.length === 0)">
-                    <tr>
-                        <td colspan="11" class="grid-empty">
-                            Không có dữ liệu
-                        </td>
-                    </tr>
-                </ng-container>
-                <tr *ngFor="let row of data?.content; let i = index" (dblclick)="rowDoubleClick.emit(row)"
-                    [class.selected]="selectedIds.has(row.id)">
-                    <td class="checkbox-col"><input type="checkbox" [checked]="selectedIds.has(row.id)"
-                            (change)="toggleRow(row.id, $event.target.checked)"></td>
-                    <td class="stt-col">{{ data!.page * data!.size + i + 1 }}</td>
-                    <td>{{ row.paramType }}</td>
-                    <td>{{ row.paramValue }}</td>
-                    <td>{{ row.paramName }}</td>
-                    <td>{{ row.description }}</td>
-                    <td>{{ row.componentCode }}</td>
-                    <td>{{ row.effectiveDate ? (row.effectiveDate | date:'dd/MM/yyyy') : '-' }}</td>
-                    <td>{{ row.endEffectiveDate ? (row.endEffectiveDate | date:'dd/MM/yyyy') : '-' }}</td>
-                    <td>
-                        <span [ngClass]="getStatusClass(row.status)" class="status-cell">
-                            {{ getStatusLabel(row.status) }}
-                        </span>
-                    </td>
-                    <td>
-                        <span [ngClass]="getActiveClass(row.isActive)" class="is-active-cell">
-                            {{ getActiveLabel(row.isActive) }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div style="position: relative;">
+  <!-- Table -->
+  <div style="overflow-x: auto;">
+    <table [style.minWidth.px]="totalWidth" style="border-collapse: collapse; font-size: 13px; table-layout: fixed;">
+      <thead>
+        <tr style="background-color: #F8F8F8; border-bottom: 1px solid var(--border-color);">
+          <th *ngFor="let column of columns; let i = index; trackBy: trackByColumnId"
+              [draggable]="!column.fixed"
+              (dragstart)="onDragStart($event, column.id, i)"
+              (dragover)="onDragOver($event, i)"
+              (dragleave)="onDragLeave()"
+              (drop)="onDrop($event, i)"
+              (dragend)="onDragEnd()"
+              [style.width.px]="column.width"
+              [style.minWidth.px]="column.minWidth"
+              [style.position]="'relative'"
+              [style.cursor]="column.fixed ? 'default' : 'move'"
+              [class.drag-over]="dragOverIndex === i"
+              style="padding: 12px 16px; text-align: left; font-weight: 600; color: var(--gray-700); border-right: 1px solid var(--border-color); white-space: nowrap; user-select: none;">
+            
+            <!-- Checkbox column -->
+            <ng-container *ngIf="column.field === 'checkbox'">
+              <input type="checkbox" 
+                     [checked]="allSelected"
+                     (change)="toggleAll($any($event.target).checked)"
+                     style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary-color);" />
+            </ng-container>
 
-    <!-- Pagination (data.page is 0-based, matching what search() sends to the backend) -->
-    <div class="grid-pagination" *ngIf="data && data.content.length > 0">
-        <button class="pagination-btn" (click)="pageChange.emit(1)" [disabled]="data.page === 0">
-            &laquo;
-        </button>
-        <button class="pagination-btn" (click)="pageChange.emit(data.page)" [disabled]="data.page === 0">
-            &lt;
-        </button>
+            <!-- Action column -->
+            <ng-container *ngIf="column.field === 'actions'">
+              <span style="display: block; text-align: center;">{{ column.label }}</span>
+            </ng-container>
 
-        <span class="pagination-info">
-            Trang {{ data.page + 1 }} / {{ data.totalPages || 1 }}
-        </span>
+            <!-- Regular columns -->
+            <ng-container *ngIf="column.field !== 'checkbox' && column.field !== 'actions'">
+              <span (click)="onSort(column)" 
+                    [style.cursor]="column.sortable ? 'pointer' : 'default'"
+                    style="display: inline-flex; align-items: center; gap: 6px;">
+                {{ column.label }}
+                <span *ngIf="column.sortable" style="font-size: 10px; color: var(--primary-color); min-width: 10px;">
+                  {{ getSortIndicator(column) }}
+                </span>
+              </span>
+            </ng-container>
 
-        <button class="pagination-btn" (click)="pageChange.emit(data.page + 2)"
-            [disabled]="data.page + 1 >= data.totalPages">
-            &gt;
-        </button>
-        <button class="pagination-btn" (click)="pageChange.emit(data.totalPages)"
-            [disabled]="data.page + 1 >= data.totalPages">
-            &raquo;
-        </button>
-    </div>
+            <!-- Resize handle -->
+            <div *ngIf="column.resizable"
+                 (mousedown)="onResizeStart($event, column.id)"
+                 style="position: absolute; right: 0; top: 0; bottom: 0; width: 6px; cursor: col-resize; background: transparent; z-index: 10;"
+                 (mouseenter)="$any($event.target).style.background='#0B7B7D'"
+                 (mouseleave)="$any($event.target).style.background='transparent'">
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Empty State -->
+        <tr *ngIf="!loading && (!data || !data.content || data.content.length === 0)">
+          <td [attr.colspan]="columns.length" style="padding: 48px 24px; text-align: center; color: var(--text-tertiary); font-size: 14px;">
+            Không có dữ liệu
+          </td>
+        </tr>
+        
+        <!-- Data Rows -->
+        <tr *ngFor="let row of data?.content; let rowIndex = index; trackBy: trackByRowId" 
+            (dblclick)="rowDoubleClick.emit(row)"
+            [class.selected]="selectedIds.has(row.id)"
+            style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.15s;"
+            (mouseenter)="$any($event.target).style.backgroundColor='#F8FAFC'"
+            (mouseleave)="$any($event.target).style.backgroundColor=selectedIds.has(row.id) ? 'rgba(11,123,125,0.05)' : 'transparent'">
+          
+          <td *ngFor="let column of columns"
+              [style.width.px]="column.width"
+              [style.minWidth.px]="column.minWidth"
+              style="padding: 12px 16px; border-right: 1px solid var(--border-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            
+            <!-- Checkbox cell -->
+            <ng-container *ngIf="column.field === 'checkbox'">
+              <div style="text-align: center;">
+                <input type="checkbox"
+                       [checked]="selectedIds.has(row.id)"
+                       (change)="toggleRow(row.id, $any($event.target).checked)"
+                       style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary-color);" />
+              </div>
+            </ng-container>
+
+            <!-- STT cell -->
+            <ng-container *ngIf="column.field === 'stt'">
+              <div style="text-align: center; color: var(--text-secondary);">
+                {{ (data!.page * data!.size) + rowIndex + 1 }}
+              </div>
+            </ng-container>
+
+            <!-- Status cell -->
+            <ng-container *ngIf="column.field === 'status'">
+              <span class="badge"
+                    [class.badge-new]="row.status === 1"
+                    [class.badge-pending]="row.status === 3"
+                    [class.badge-approved]="row.status === 4"
+                    [class.badge-rejected]="row.status === 5"
+                    [class.badge-cancelled]="row.status === 7">
+                {{ getStatusLabel(row.status) }}
+              </span>
+            </ng-container>
+
+            <!-- IsActive cell -->
+            <ng-container *ngIf="column.field === 'isActive'">
+              <span class="badge"
+                    [class.badge-active]="row.isActive === 1"
+                    [class.badge-inactive]="row.isActive === 0">
+                {{ getActiveLabel(row.isActive) }}
+              </span>
+            </ng-container>
+
+            <!-- Action cell -->
+            <ng-container *ngIf="column.field === 'actions'">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 6px;"
+                   (dblclick)="$event.stopPropagation()">
+                <button type="button"
+                        [title]="canEdit(row) ? 'Sửa' : 'Bản ghi đã phê duyệt không thể cập nhật'"
+                        aria-label="Sửa bản ghi"
+                        [disabled]="!canEdit(row)"
+                        (click)="onEdit(row, $event)"
+                        (dblclick)="$event.stopPropagation()"
+                        [style.opacity]="canEdit(row) ? '1' : '0.4'"
+                        [style.cursor]="canEdit(row) ? 'pointer' : 'not-allowed'"
+                        style="width: 28px; height: 28px; padding: 0; border: 1px solid var(--primary-color); border-radius: 6px; background: white; color: var(--primary-color); display: inline-flex; align-items: center; justify-content: center;">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M9.8 3.1L12.9 6.2M2.8 13.2L5.9 12.6L13.3 5.2C13.8 4.7 13.8 3.9 13.3 3.4L12.6 2.7C12.1 2.2 11.3 2.2 10.8 2.7L3.4 10.1L2.8 13.2Z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button type="button"
+                        title="Sao chép"
+                        aria-label="Sao chép bản ghi"
+                        (click)="onCopy(row, $event)"
+                        (dblclick)="$event.stopPropagation()"
+                        style="width: 28px; height: 28px; padding: 0; border: 1px solid var(--border-color); border-radius: 6px; background: white; color: var(--gray-700); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <rect x="5.2" y="5.2" width="7.8" height="7.8" rx="1.2" stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M3 10.8H2.8C2.1 10.8 1.6 10.3 1.6 9.6V2.8C1.6 2.1 2.1 1.6 2.8 1.6H9.6C10.3 1.6 10.8 2.1 10.8 2.8V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            </ng-container>
+
+            <!-- Date cells -->
+            <ng-container *ngIf="column.field === 'effectiveDate' || column.field === 'endEffectiveDate'">
+              <span style="color: var(--text-primary);">
+                {{ getCellValue(row, column) ? (getCellValue(row, column) | date:'dd/MM/yyyy') : '-' }}
+              </span>
+            </ng-container>
+
+            <!-- Regular text cells -->
+            <ng-container *ngIf="column.field !== 'checkbox' && column.field !== 'stt' && column.field !== 'actions' && column.field !== 'status' && column.field !== 'isActive' && column.field !== 'effectiveDate' && column.field !== 'endEffectiveDate'">
+              <span style="color: var(--text-primary);" [title]="getCellValue(row, column)">
+                {{ getCellValue(row, column) || '-' }}
+              </span>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="data && data.totalElements > 0" 
+       style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 16px; border-top: 1px solid var(--border-color); background-color: #FAFBFC;">
+    <button (click)="pageChange.emit(1)" 
+            [disabled]="data.page === 0"
+            style="min-width: 32px; height: 32px; padding: 0 8px; border: 1px solid var(--border-color); border-radius: 4px; background: white; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s;"
+            [style.opacity]="data.page === 0 ? '0.5' : '1'"
+            [style.cursor]="data.page === 0 ? 'not-allowed' : 'pointer'">
+      ⟪
+    </button>
+    <button (click)="pageChange.emit(data.page)" 
+            [disabled]="data.page === 0"
+            style="min-width: 32px; height: 32px; padding: 0 8px; border: 1px solid var(--border-color); border-radius: 4px; background: white; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s;"
+            [style.opacity]="data.page === 0 ? '0.5' : '1'"
+            [style.cursor]="data.page === 0 ? 'not-allowed' : 'pointer'">
+      ‹
+    </button>
+    
+    <span style="font-size: 13px; color: var(--text-secondary); margin: 0 12px; font-weight: 500;">
+      Trang {{ data.page + 1 }} / {{ data.totalPages || 1 }}
+    </span>
+    
+    <button (click)="pageChange.emit(data.page + 2)"
+            [disabled]="data.page + 1 >= data.totalPages"
+            style="min-width: 32px; height: 32px; padding: 0 8px; border: 1px solid var(--border-color); border-radius: 4px; background: white; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s;"
+            [style.opacity]="data.page + 1 >= data.totalPages ? '0.5' : '1'"
+            [style.cursor]="data.page + 1 >= data.totalPages ? 'not-allowed' : 'pointer'">
+      ›
+    </button>
+    <button (click)="pageChange.emit(data.totalPages)"
+            [disabled]="data.page + 1 >= data.totalPages"
+            style="min-width: 32px; height: 32px; padding: 0 8px; border: 1px solid var(--border-color); border-radius: 4px; background: white; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s;"
+            [style.opacity]="data.page + 1 >= data.totalPages ? '0.5' : '1'"
+            [style.cursor]="data.page + 1 >= data.totalPages ? 'not-allowed' : 'pointer'">
+      ⟫
+    </button>
+  </div>
 </div>
+
+<style>
+tr.selected {
+  background-color: rgba(11, 123, 125, 0.05) !important;
+}
+
+th.drag-over {
+  background-color: rgba(11, 123, 125, 0.1) !important;
+  border-left: 3px solid #0B7B7D;
+}
+</style>

@@ -1,6 +1,18 @@
 // models/group-category.model.ts
 import { ParamStatus, IsActive, IsDisplay } from './status.enum';
 
+export interface GroupCategoryDraftData {
+  action?: 'UPDATE' | 'CANCEL_APPROVAL' | string;
+  paramName?: string | null;
+  paramValue?: string | null;
+  paramType?: string | null;
+  description?: string | null;
+  componentCode?: string | null;
+  isActive?: IsActive | null;
+  effectiveDate?: string | null;
+  endEffectiveDate?: string | null;
+}
+
 export interface GroupCategory {
   id: number;
   paramName: string;              // PARAM_NAME - Tên thành phần (bắt buộc)
@@ -11,7 +23,7 @@ export interface GroupCategory {
   status: ParamStatus;            // STATUS - 1=Mới, 3=Chờ duyệt, 4=Đã duyệt, 5=Từ chối, 7=Hủy duyệt
   isActive: IsActive;             // IS_ACTIVE - 0=Không hoạt động, 1=Hoạt động
   isDisplay?: IsDisplay;          // IS_DISPLAY - 1=Chưa duyệt, 2=Đã duyệt (chỉ logic FE, không hiển thị)
-  newData?: string;               // NEW_DATA - JSON string dữ liệu mới chờ duyệt
+  newData?: string | GroupCategoryDraftData | null; // NEW_DATA - dữ liệu mới chờ duyệt
   effectiveDate: string;          // EFFECTIVE_DATE - Ngày hiệu lực (ISO, bắt buộc)
   endEffectiveDate?: string;      // END_EFFECTIVE_DATE - Ngày hết hiệu lực (ISO)
   createdBy?: string;             // Người tạo
@@ -39,7 +51,7 @@ export interface GroupCategoryFormValue {
 export interface GroupCategoryDiff {
   status: ParamStatus;            // Trạng thái hiện tại
   oldData: Partial<GroupCategoryFormValue> | null; // Dữ liệu cũ (null nếu là bản ghi mới)
-  newData: GroupCategoryFormValue; // Dữ liệu mới
+  newData: Partial<GroupCategoryFormValue>; // Dữ liệu mới
   changedFields: (keyof GroupCategoryFormValue)[]; // Các trường thay đổi (để highlight)
 }
 

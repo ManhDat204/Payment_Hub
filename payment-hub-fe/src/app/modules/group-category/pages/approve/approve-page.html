@@ -10,8 +10,7 @@
   <div class="page-content">
     <app-confirm-dialog
       *ngIf="showConfirm && mode === 'approve'"
-      [title]="confirmTitle"
-      [message]="confirmMessage"
+      [config]="approveDialogConfig"
       (confirmed)="onConfirmed($event)">
     </app-confirm-dialog>
 
