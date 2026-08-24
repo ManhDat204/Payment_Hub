@@ -94,7 +94,7 @@ button, input, select {
 }
 
 .nav-item.active {
-  background: #10b981;
+  background: rgb(11, 123, 125);
   color: #ffffff;
   font-weight: 500;
 }

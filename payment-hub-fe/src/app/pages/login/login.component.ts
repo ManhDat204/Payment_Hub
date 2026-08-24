@@ -33,11 +33,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Lấy returnUrl từ query params
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     
-    // Note: Cho phép vào trang login ngay cả khi đã authenticated
-    // để có thể test giao diện hoặc đăng nhập với tài khoản khác
+
   }
 
   onSubmit(): void {
