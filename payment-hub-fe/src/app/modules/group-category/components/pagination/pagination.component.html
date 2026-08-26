@@ -15,7 +15,7 @@
       type="button"
       [class.is-active]="item === currentPage"
       [attr.aria-current]="item === currentPage ? 'page' : null"
-      (click)="goTo(item)">
+      (click)="goToItem(item)">
       {{ item }}
     </button>
 

@@ -77,9 +77,14 @@ export class GroupCategoryDetailPageComponent implements OnInit {
     });
   }
 
-  onAction(action: 'approve' | 'reject' | 'submit' | 'cancel' | 'delete' | null): void {
+  onAction(action: 'approve' | 'reject' | 'submit' | 'cancel' | 'delete' | 'history' | null): void {
     if (!action) {
       this.navigationService.navigateToList();
+      return;
+    }
+
+    if (action === 'history' && this.record) {
+      this.navigationService.navigateToHistory(this.record.id);
       return;
     }
 

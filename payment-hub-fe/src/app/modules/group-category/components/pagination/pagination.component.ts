@@ -49,6 +49,12 @@ export class GroupCategoryPaginationComponent {
     this.pageChange.emit(nextPage);
   }
 
+  goToItem(item: PaginationItem): void {
+    if (this.isPage(item)) {
+      this.goTo(item);
+    }
+  }
+
   trackByItem(index: number, item: PaginationItem): string {
     return `${item}-${index}`;
   }

@@ -34,12 +34,14 @@
               *ngFor="let log of data?.content; trackBy: trackByLogId"
               [class.is-selected]="selectedLogId === log.id"
               (click)="selectLog(log)">
-              <td class="user-cell">
-                <span class="user-avatar">{{ getInitials(log) }}</span>
-                <span class="user-info">
-                  <strong>{{ log.userName || log.userId || '-' }}</strong>
-                  <span>Mã CB: {{ log.userId || '-' }}</span>
-                </span>
+              <td>
+                <div class="user-cell">
+                  <span class="user-avatar">{{ getInitials(log) }}</span>
+                  <span class="user-info">
+                    <strong>{{ log.userName || log.userId || '-' }}</strong>
+                    <span>Mã CB: {{ log.userId || '-' }}</span>
+                  </span>
+                </div>
               </td>
               <td>{{ log.actionAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
               <td>{{ log.action || '-' }}</td>
