@@ -1,0 +1,64 @@
+<div class="history-overlay" (click)="onClose()">
+  <section class="history-dialog" role="dialog" aria-modal="true" aria-labelledby="history-title" (click)="$event.stopPropagation()">
+    <header class="history-header">
+      <h3 id="history-title">Lịch sử thao tác</h3>
+      <button class="history-close" type="button" aria-label="Đóng" (click)="onClose()">&times;</button>
+    </header>
+
+    <div class="history-body">
+      <div class="history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th class="col-user">Người dùng</th>
+              <th class="col-date">Ngày thực hiện</th>
+              <th class="col-action">Thao tác</th>
+              <th class="col-ip">IP</th>
+              <th class="col-content">Nội dung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td class="history-state" colspan="5">Đang tải dữ liệu...</td>
+            </tr>
+
+            <tr *ngIf="!loading && errorMessage">
+              <td class="history-state history-state-error" colspan="5">{{ errorMessage }}</td>
+            </tr>
+
+            <tr *ngIf="!loading && !errorMessage && !(data?.content?.length)">
+              <td class="history-state" colspan="5">Không có dữ liệu</td>
+            </tr>
+
+            <tr
+              *ngFor="let log of data?.content; trackBy: trackByLogId"
+              [class.is-selected]="selectedLogId === log.id"
+              (click)="selectLog(log)">
+              <td>
+                <div class="user-cell">
+                  <span class="user-avatar">{{ getInitials(log) }}</span>
+                  <span class="user-info">
+                    <strong>{{ log.userName || log.userId || '-' }}</strong>
+                    <span>Mã CB: {{ log.userId || '-' }}</span>
+                  </span>
+                </div>
+              </td>
+              <td>{{ log.actionAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td>{{ log.action || '-' }}</td>
+              <td>{{ log.ip || '-' }}</td>
+              <td class="content-cell" [title]="log.content">{{ log.content || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="history-pagination" *ngIf="data && data.totalElements > 0">
+        <app-group-category-pagination
+          [currentPage]="page"
+          [totalPages]="data.totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-group-category-pagination>
+      </div>
+    </div>
+  </section>
+</div>

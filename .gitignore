@@ -1,0 +1,15 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Java / Maven
+payment_hub_be/target/
+
+# Frontend - Node
+payment_hub_fe/node_modules/
+payment_hub_fe/dist/
+
+# Environment
+.env
+.env.*
+!.env.example

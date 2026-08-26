@@ -1,0 +1,43 @@
+<div class="page-container">
+  <div class="page-header-back">
+    <button class="btn-back" (click)="onBack()">
+      <span class="arrow">&lt;</span>
+      <span>Trở lại</span>
+    </button>
+    <h2 class="page-title">Xem chi tiết tham số danh mục theo nhóm</h2>
+  </div>
+
+  <div class="page-content">
+    <app-group-category-detail-dialog
+      *ngIf="record"
+      [record]="record"
+      [diff]="diff"
+      (action)="onAction($event)">
+    </app-group-category-detail-dialog>
+  </div>
+</div>
+
+<!-- Confirm Dialogs -->
+<app-confirm-dialog 
+  *ngIf="showSubmitDialog"
+  [config]="submitDialogConfig"
+  (confirmed)="onSubmitConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showApproveDialog"
+  [config]="approveDialogConfig"
+  (confirmed)="onApproveConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showRejectDialog"
+  [config]="rejectDialogConfig"
+  (confirmed)="onRejectConfirmed($event)">
+</app-confirm-dialog>
+
+<app-confirm-dialog 
+  *ngIf="showCancelApprovalDialog"
+  [config]="cancelApprovalDialogConfig"
+  (confirmed)="onCancelApprovalConfirmed($event)">
+</app-confirm-dialog>

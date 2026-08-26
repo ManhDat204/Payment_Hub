@@ -1,0 +1,7 @@
+<ng-container>
+  <app-group-category-list-page *ngIf="isCurrentMode('list')"></app-group-category-list-page>
+  <app-group-category-add-page *ngIf="isCurrentMode('add') || isCurrentMode('edit') || isCurrentMode('copy')"></app-group-category-add-page>
+  <app-group-category-detail-page *ngIf="isCurrentMode('detail')"></app-group-category-detail-page>
+  <app-group-category-approve-page *ngIf="isCurrentMode('approve') || isCurrentMode('reject')"></app-group-category-approve-page>
+  <app-group-category-history-page *ngIf="isCurrentMode('history')"></app-group-category-history-page>
+</ng-container>
