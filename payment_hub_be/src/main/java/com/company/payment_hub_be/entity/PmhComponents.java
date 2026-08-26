@@ -29,7 +29,7 @@ public class PmhComponents {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "COMPONENT_CODE", length = 255, nullable = false)
+    @Column(name = "COMPONENT_CODE", length = 255, nullable = false, unique = true)
     private String componentCode;
 
     @Column(name = "COMPONENT_NAME", length = 255)

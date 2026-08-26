@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -52,22 +53,32 @@ public abstract class GroupCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<GroupCategoryResponse> create(@RequestBody GroupCategoryUpsertRequest request) {
-        return ResponseEntity.status(201).body(service.create(request, false));
+    public ResponseEntity<GroupCategoryResponse> create(
+            @RequestBody GroupCategoryUpsertRequest request,
+            Principal principal) {
+        String actor = principal.getName(); // Lấy username từ JWT
+        return ResponseEntity.status(201).body(service.create(request, actor, false));
     }
 
     @PostMapping("/save-and-submit")
-    public ResponseEntity<GroupCategoryResponse> createAndSubmit(@RequestBody GroupCategoryUpsertRequest request) {
-        return ResponseEntity.status(201).body(service.create(request, true));
+    public ResponseEntity<GroupCategoryResponse> createAndSubmit(
+            @RequestBody GroupCategoryUpsertRequest request,
+            Principal principal) {
+        String actor = principal.getName();
+        return ResponseEntity.status(201).body(service.create(request, actor, true));
     }
 
     @PutMapping("/{id}")
-    public GroupCategoryResponse update(@PathVariable Long id, @RequestBody GroupCategoryUpsertRequest request) {
-        return service.update(id, request);
+    public GroupCategoryResponse update(
+            @PathVariable Long id,
+            @RequestBody GroupCategoryUpsertRequest request,
+            Principal principal) {
+        String actor = principal.getName();
+        return service.update(id, request, actor);
     }
 
     @PostMapping("/{id}/submit")
-    public GroupCategoryResponse submit(@PathVariable Long id, @RequestBody ActionRequest request) {
+    public GroupCategoryResponse submit(@PathVariable Long id, @RequestBody(required = false) ActionRequest request) {
         return service.submit(id, request);
     }
 
@@ -75,12 +86,12 @@ public abstract class GroupCategoryController {
     public List<GroupCategoryResponse> submitBatch(@RequestBody BatchActionRequest request) {
         ensureBatchIds(request);
         return request.ids().stream()
-                .map(id -> service.submit(id, new ActionRequest(request.actor())))
+                .map(id -> service.submit(id, null))
                 .toList();
     }
 
     @PostMapping("/{id}/approve")
-    public GroupCategoryResponse approve(@PathVariable Long id, @RequestBody ActionRequest request) {
+    public GroupCategoryResponse approve(@PathVariable Long id, @RequestBody(required = false) ActionRequest request) {
         return service.approve(id, request);
     }
 
@@ -88,7 +99,7 @@ public abstract class GroupCategoryController {
     public List<GroupCategoryResponse> approveBatch(@RequestBody BatchActionRequest request) {
         ensureBatchIds(request);
         return request.ids().stream()
-                .map(id -> service.approve(id, new ActionRequest(request.actor())))
+                .map(id -> service.approve(id, null))
                 .toList();
     }
 
@@ -102,12 +113,12 @@ public abstract class GroupCategoryController {
             throw BusinessException.badRequest("ids is required");
         }
         return request.ids().stream()
-                .map(id -> service.reject(id, new RejectRequest(request.actor(), request.reason())))
+                .map(id -> service.reject(id, new RejectRequest(request.reason())))
                 .toList();
     }
 
     @PostMapping("/{id}/cancel-approval")
-    public GroupCategoryResponse requestCancelApproval(@PathVariable Long id, @RequestBody ActionRequest request) {
+    public GroupCategoryResponse requestCancelApproval(@PathVariable Long id, @RequestBody(required = false) ActionRequest request) {
         return service.requestCancelApproval(id, request);
     }
 
@@ -115,7 +126,7 @@ public abstract class GroupCategoryController {
     public List<GroupCategoryResponse> requestCancelApprovalBatch(@RequestBody BatchActionRequest request) {
         ensureBatchIds(request);
         return request.ids().stream()
-                .map(id -> service.requestCancelApproval(id, new ActionRequest(request.actor())))
+                .map(id -> service.requestCancelApproval(id, null))
                 .toList();
     }
 

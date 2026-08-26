@@ -185,7 +185,7 @@ export class GroupCategoryListPageComponent implements OnInit {
     this.showDetailDialog = true;
     this.cdr.markForCheck();
   }
-  onDetailAction(action: 'approve' | 'reject' | 'submit' | 'cancel' | 'delete' | null): void {
+  onDetailAction(action: 'approve' | 'reject' | 'submit' | 'cancel' | 'delete' | 'history' | null): void {
     console.log('🟢 List page: onDetailAction received:', action);
     
     if (!action) {
@@ -233,6 +233,8 @@ export class GroupCategoryListPageComponent implements OnInit {
         message: 'Bạn có chắc chắn xóa bản ghi này?',
       };
       this.showDeleteDialog = true;
+    } else if (action === 'history' && this.selectedRecord) {
+      this.navigationService.navigateToHistory(this.selectedRecord.id);
     }
     
     this.cdr.markForCheck();
@@ -253,6 +255,10 @@ export class GroupCategoryListPageComponent implements OnInit {
 
   onCopy(row: GroupCategory): void {
     this.navigationService.navigateToCopy(row);
+  }
+
+  onHistory(row: GroupCategory): void {
+    this.navigationService.navigateToHistory(row.id);
   }
 
   onSortChange(sort: { field: string; order: 'ASC' | 'DESC' }): void {

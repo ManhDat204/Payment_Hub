@@ -7,7 +7,7 @@ import { RejectReasonDialogComponent } from '../../components/reject-reason-dial
 
 @Component({
   selector: 'app-group-category-approve-page',
-  templateUrl: './approve-page.html',
+  templateUrl: './approve-page.component.html',
   standalone: true,
   imports: [CommonModule, ConfirmDialogComponent, RejectReasonDialogComponent],
 })

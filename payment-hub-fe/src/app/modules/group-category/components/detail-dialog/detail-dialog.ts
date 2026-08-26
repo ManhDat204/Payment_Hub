@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GroupCategory, GroupCategoryDiff } from '../../models/model';
 import { ParamStatus, IsDisplay } from '../../models/status.enum';
 
-type Action = 'approve' | 'reject' | 'submit' | 'cancel' | 'delete';
+type Action = 'approve' | 'reject' | 'submit' | 'cancel' | 'delete' | 'history';
 
 @Component({
   selector: 'app-group-category-detail-dialog',
@@ -59,6 +59,9 @@ export class DetailDialogComponent {
   delete(): void { 
     console.log('🔵 Detail dialog: delete() called');
     this.action.emit('delete'); 
+  }
+  history(): void {
+    this.action.emit('history');
   }
   close(): void { 
     console.log('🔵 Detail dialog: close() called');

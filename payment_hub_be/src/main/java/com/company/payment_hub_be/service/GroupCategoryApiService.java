@@ -15,9 +15,9 @@ public interface GroupCategoryApiService {
 
     GroupCategoryResponse getById(Long id);
 
-    GroupCategoryResponse create(GroupCategoryUpsertRequest request, boolean submit);
+    GroupCategoryResponse create(GroupCategoryUpsertRequest request, String actor, boolean submit);
 
-    GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request);
+    GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request, String actor);
 
     GroupCategoryResponse submit(Long id, ActionRequest request);
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GroupCategory } from '../../models/model';
 import { PagedResult } from '../../services/api.service';
 import { ParamStatus } from '../../models/status.enum';
+import { GroupCategoryPaginationComponent } from '../pagination/pagination.component';
 
 interface ColumnDef {
   id: string;
@@ -19,7 +20,7 @@ interface ColumnDef {
   selector: 'app-group-category-grid',
   templateUrl: './data-grid.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, GroupCategoryPaginationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataGridComponent  {
@@ -39,6 +40,7 @@ export class DataGridComponent  {
   @Output() sortChange = new EventEmitter<{ field: string; order: 'ASC' | 'DESC' }>();
   @Output() edit = new EventEmitter<GroupCategory>();
   @Output() copy = new EventEmitter<GroupCategory>();
+  @Output() history = new EventEmitter<GroupCategory>();
 
   // Column definitions
   columns: ColumnDef[] = [
@@ -53,7 +55,7 @@ export class DataGridComponent  {
     { id: 'endEffectiveDate', label: 'Ngày hết hiệu lực', field: 'endEffectiveDate', width: 150, minWidth: 120, resizable: true, sortable: true, fixed: false },
     { id: 'status', label: 'Trạng thái tham số', field: 'status', width: 150, minWidth: 120, resizable: true, sortable: true, fixed: false },
     { id: 'isActive', label: 'Trạng thái hoạt động', field: 'isActive', width: 150, minWidth: 120, resizable: true, sortable: true, fixed: false },
-    { id: 'actions', label: 'Thao tác', field: 'actions', width: 88, minWidth: 88, resizable: false, sortable: false, fixed: true }
+    { id: 'actions', label: 'Thao tác', field: 'actions', width: 124, minWidth: 124, resizable: false, sortable: false, fixed: true }
   ];
 
   // Sorting state
@@ -118,6 +120,15 @@ export class DataGridComponent  {
   onCopy(row: GroupCategory, event: MouseEvent): void {
     event.stopPropagation();
     this.copy.emit(row);
+  }
+
+  onHistory(row: GroupCategory, event: MouseEvent): void {
+    event.stopPropagation();
+    this.history.emit(row);
+  }
+
+  onPageSelected(page: number): void {
+    this.pageChange.emit(page);
   }
 
   canEdit(row: GroupCategory): boolean {

@@ -17,6 +17,7 @@ import com.company.payment_hub_be.payload.request.RejectRequest;
 import com.company.payment_hub_be.exception.BusinessException;
 import com.company.payment_hub_be.entity.PmhComponents;
 import com.company.payment_hub_be.entity.PmhGroupCategory;
+import com.company.payment_hub_be.util.SecurityUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
@@ -35,14 +36,14 @@ import java.util.stream.Collectors;
 
 @Service("groupCategoryNativeService")
 @Transactional
-public class GroupCategoryNativeService implements GroupCategoryApiService {
+public class GroupCategoryNativeServiceImpl implements GroupCategoryApiService {
     @PersistenceContext
     private EntityManager entityManager;
 
     private final GroupCategoryMapper mapper;
     private final GroupCategoryRules rules;
 
-    public GroupCategoryNativeService(GroupCategoryMapper mapper, GroupCategoryRules rules) {
+    public GroupCategoryNativeServiceImpl(GroupCategoryMapper mapper, GroupCategoryRules rules) {
         this.mapper = mapper;
         this.rules = rules;
     }
@@ -76,14 +77,14 @@ public class GroupCategoryNativeService implements GroupCategoryApiService {
     }
 
     @Override
-    public GroupCategoryResponse create(GroupCategoryUpsertRequest request, boolean submit) {
+    public GroupCategoryResponse create(GroupCategoryUpsertRequest request, String actor, boolean submit) {
         Set<String> activeCodes = activeComponentCodes();
         rules.validateUpsert(request, activeCodes);
         rules.ensureUnique(existsByBusinessKey(request.paramType(), request.paramValue(), null));
 
-        String actor = rules.actor(request.actor());
-        PmhGroupCategory entity = mapper.toNewEntity(request, actor);
-        rules.touchCreate(entity, actor, submit);
+        String validatedActor = rules.actor(actor);
+        PmhGroupCategory entity = mapper.toNewEntity(request, validatedActor);
+        rules.touchCreate(entity, validatedActor, submit);
         entity.setStatus(submit ? ParamStatus.PENDING : ParamStatus.NEW);
         entity.setIsDisplay(DisplayFlag.NOT_APPROVED_YET);
 
@@ -92,13 +93,13 @@ public class GroupCategoryNativeService implements GroupCategoryApiService {
     }
 
     @Override
-    public GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request) {
+    public GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request, String actor) {
         PmhGroupCategory entity = findById(id);
         Set<String> activeCodes = activeComponentCodes();
         rules.validateUpsert(request, activeCodes);
         rules.ensureUnique(existsByBusinessKey(request.paramType(), request.paramValue(), id));
 
-        String actor = rules.actor(request.actor());
+        String validatedActor = rules.actor(actor);
         if (entity.getIsDisplay() == DisplayFlag.WAS_APPROVED) {
             GroupCategoryDraftData draft = GroupCategoryDraftData.update(request);
             rules.validateDraftFits(draft);
@@ -117,7 +118,8 @@ public class GroupCategoryNativeService implements GroupCategoryApiService {
     @Override
     public GroupCategoryResponse submit(Long id, ActionRequest request) {
         PmhGroupCategory entity = findById(id);
-        String actor = rules.actor(request == null ? null : request.actor());
+        String actor = SecurityUtil.getCurrentUsername();
+        System.out.println("📝 Native submit() - actor from SecurityUtil: " + actor);
         rules.ensureCanSubmit(entity);
         entity.setStatus(ParamStatus.PENDING);
         entity.setRejectReason(null);
@@ -129,21 +131,20 @@ public class GroupCategoryNativeService implements GroupCategoryApiService {
     @Override
     public GroupCategoryResponse approve(Long id, ActionRequest request) {
         PmhGroupCategory entity = findById(id);
-        String actor = rules.actor(request == null ? null : request.actor());
+        String actor = SecurityUtil.getCurrentUsername();
+        System.out.println("📝 Native approve() - actor from SecurityUtil: " + actor);
         rules.ensureCanApprove(entity);
 
         GroupCategoryDraftData draft = mapper.readDraft(entity.getNewData());
-        if (draft != null && GroupCategoryDraftData.ACTION_CANCEL_APPROVAL.equals(draft.action())) {
-            entity.setStatus(ParamStatus.CANCELLED);
-            entity.setIsActive(ActiveStatus.INACTIVE);
-        } else {
-            if (draft != null && GroupCategoryDraftData.ACTION_UPDATE.equals(draft.action())) {
-                rules.ensureUnique(existsByBusinessKey(draft.paramType(), draft.paramValue(), id));
-            }
-            mapper.applyDraft(entity, draft);
-            entity.setStatus(ParamStatus.APPROVED);
-            entity.setIsDisplay(DisplayFlag.WAS_APPROVED);
+        
+        // Apply draft changes for update action
+        if (draft != null && GroupCategoryDraftData.ACTION_UPDATE.equals(draft.action())) {
+            rules.ensureUnique(existsByBusinessKey(draft.paramType(), draft.paramValue(), id));
         }
+        
+        mapper.applyDraft(entity, draft);
+        entity.setStatus(ParamStatus.APPROVED);
+        entity.setIsDisplay(DisplayFlag.WAS_APPROVED);
         entity.setNewData(null);
         entity.setRejectReason(null);
         rules.touchApprove(entity, actor);
@@ -155,7 +156,8 @@ public class GroupCategoryNativeService implements GroupCategoryApiService {
     public GroupCategoryResponse reject(Long id, RejectRequest request) {
         PmhGroupCategory entity = findById(id);
         rules.ensureCanReject(entity, request);
-        String actor = rules.actor(request.actor());
+        String actor = SecurityUtil.getCurrentUsername();
+        System.out.println("📝 Native reject() - actor from SecurityUtil: " + actor);
         entity.setStatus(ParamStatus.REJECTED);
         entity.setRejectReason(request.reason().trim());
         entity.setNewData(null);
@@ -167,12 +169,14 @@ public class GroupCategoryNativeService implements GroupCategoryApiService {
     @Override
     public GroupCategoryResponse requestCancelApproval(Long id, ActionRequest request) {
         PmhGroupCategory entity = findById(id);
-        String actor = rules.actor(request == null ? null : request.actor());
+        String actor = SecurityUtil.getCurrentUsername();
+        System.out.println("📝 Native requestCancelApproval() - actor from SecurityUtil: " + actor);
         rules.ensureCanRequestCancelApproval(entity);
-        GroupCategoryDraftData draft = GroupCategoryDraftData.cancelApproval();
-        rules.validateDraftFits(draft);
-        entity.setNewData(mapper.toDraftJson(draft));
-        entity.setStatus(ParamStatus.PENDING);
+        
+        // Chuyển trực tiếp từ STATUS 4 (Đã duyệt) → 7 (Hủy duyệt)
+        entity.setStatus(ParamStatus.CANCELLED);
+        entity.setIsActive(ActiveStatus.INACTIVE);
+        entity.setNewData(null);
         entity.setRejectReason(null);
         rules.touchUpdate(entity, actor);
         updateAllColumns(entity);

@@ -11,7 +11,6 @@ public record GroupCategoryUpsertRequest(
         String componentCode,
         Integer isActive,
         LocalDateTime effectiveDate,
-        LocalDateTime endEffectiveDate,
-        String actor
+        LocalDateTime endEffectiveDate
 ) {
 }

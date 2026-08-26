@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,12 @@ import java.time.LocalDateTime;
 @Builder
 public class PmhGroupCategory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pmh_group_category_seq")
+    @SequenceGenerator(
+        name = "pmh_group_category_seq",
+        sequenceName = "PMH_GROUP_CATEGORY_SEQ",
+        allocationSize = 1
+    )
     @Column(name = "ID")
     private Long id;
 

@@ -1,0 +1,35 @@
+<nav class="pagination" *ngIf="totalPages > 1" aria-label="Phân trang">
+  <button
+    class="pagination-nav"
+    type="button"
+    aria-label="Trang trước"
+    [disabled]="currentPage <= 1"
+    (click)="goTo(currentPage - 1)">
+    &lsaquo;
+  </button>
+
+  <ng-container *ngFor="let item of items; trackBy: trackByItem">
+    <button
+      *ngIf="isPage(item); else ellipsis"
+      class="pagination-page"
+      type="button"
+      [class.is-active]="item === currentPage"
+      [attr.aria-current]="item === currentPage ? 'page' : null"
+      (click)="goTo(item)">
+      {{ item }}
+    </button>
+
+    <ng-template #ellipsis>
+      <span class="pagination-ellipsis">...</span>
+    </ng-template>
+  </ng-container>
+
+  <button
+    class="pagination-nav"
+    type="button"
+    aria-label="Trang sau"
+    [disabled]="currentPage >= totalPages"
+    (click)="goTo(currentPage + 1)">
+    &rsaquo;
+  </button>
+</nav>

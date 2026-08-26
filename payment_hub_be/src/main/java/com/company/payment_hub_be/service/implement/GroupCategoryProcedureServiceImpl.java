@@ -13,6 +13,7 @@ import com.company.payment_hub_be.payload.request.RejectRequest;
 import com.company.payment_hub_be.exception.BusinessException;
 import com.company.payment_hub_be.entity.PmhComponents;
 import com.company.payment_hub_be.entity.PmhGroupCategory;
+import com.company.payment_hub_be.util.SecurityUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.ParameterMode;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Service("groupCategoryProcedureService")
 @Transactional
-public class GroupCategoryProcedureService implements GroupCategoryApiService {
+public class GroupCategoryProcedureServiceImpl implements GroupCategoryApiService {
     private static final String PACKAGE = "PMH_GROUP_CATEGORY_PKG.";
 
     @PersistenceContext
@@ -40,7 +41,7 @@ public class GroupCategoryProcedureService implements GroupCategoryApiService {
     private final GroupCategoryMapper mapper;
     private final GroupCategoryRules rules;
 
-    public GroupCategoryProcedureService(GroupCategoryMapper mapper, GroupCategoryRules rules) {
+    public GroupCategoryProcedureServiceImpl(GroupCategoryMapper mapper, GroupCategoryRules rules) {
         this.mapper = mapper;
         this.rules = rules;
     }
@@ -77,40 +78,40 @@ public class GroupCategoryProcedureService implements GroupCategoryApiService {
     }
 
     @Override
-    public GroupCategoryResponse create(GroupCategoryUpsertRequest request, boolean submit) {
+    public GroupCategoryResponse create(GroupCategoryUpsertRequest request, String actor, boolean submit) {
         rules.validateUpsert(request, activeComponentCodes());
         Long id = callReturningId(PACKAGE + "CREATE_PARAM", query -> {
             registerUpsertParameters(query);
             query.registerStoredProcedureParameter("P_SUBMIT", Integer.class, ParameterMode.IN);
-            setUpsertParameters(query, request);
+            setUpsertParameters(query, request, actor);
             query.setParameter("P_SUBMIT", submit ? 1 : 0);
         });
         return getById(id);
     }
 
     @Override
-    public GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request) {
+    public GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request, String actor) {
         rules.validateUpsert(request, activeComponentCodes());
         Long updatedId = callReturningId(PACKAGE + "UPDATE_PARAM", query -> {
             query.registerStoredProcedureParameter("P_ID_IN", Long.class, ParameterMode.IN);
             registerUpsertParameters(query);
             query.setParameter("P_ID_IN", id);
-            setUpsertParameters(query, request);
+            setUpsertParameters(query, request, actor);
         });
         return getById(updatedId);
     }
 
     @Override
     public GroupCategoryResponse submit(Long id, ActionRequest request) {
-        rules.validateActionActor(request == null ? null : request.actor());
-        Long updatedId = callActionReturningId(PACKAGE + "SUBMIT_PARAM", id, request.actor(), null);
+        String actor = SecurityUtil.getCurrentUsername();
+        Long updatedId = callActionReturningId(PACKAGE + "SUBMIT_PARAM", id, actor, null);
         return getById(updatedId);
     }
 
     @Override
     public GroupCategoryResponse approve(Long id, ActionRequest request) {
-        rules.validateActionActor(request == null ? null : request.actor());
-        Long updatedId = callActionReturningId(PACKAGE + "APPROVE_PARAM", id, request.actor(), null);
+        String actor = SecurityUtil.getCurrentUsername();
+        Long updatedId = callActionReturningId(PACKAGE + "APPROVE_PARAM", id, actor, null);
         return getById(updatedId);
     }
 
@@ -119,18 +120,19 @@ public class GroupCategoryProcedureService implements GroupCategoryApiService {
         if (request == null) {
             throw BusinessException.badRequest("Request body is required");
         }
-        rules.validateActionActor(request.actor());
+        String actor = SecurityUtil.getCurrentUsername();
         if (request.reason() == null || request.reason().trim().isEmpty()) {
             throw BusinessException.badRequest("reason is required");
         }
-        Long updatedId = callActionReturningId(PACKAGE + "REJECT_PARAM", id, request.actor(), request.reason());
+        Long updatedId = callActionReturningId(PACKAGE + "REJECT_PARAM", id, actor, request.reason());
         return getById(updatedId);
     }
 
     @Override
     public GroupCategoryResponse requestCancelApproval(Long id, ActionRequest request) {
-        rules.validateActionActor(request == null ? null : request.actor());
-        Long updatedId = callActionReturningId(PACKAGE + "REQUEST_CANCEL_APPROVAL", id, request.actor(), null);
+        String actor = SecurityUtil.getCurrentUsername();
+        System.out.println("📝 requestCancelApproval() - actor from SecurityUtil: " + actor);
+        Long updatedId = callActionReturningId(PACKAGE + "REQUEST_CANCEL_APPROVAL", id, actor, null);
         return getById(updatedId);
     }
 
@@ -223,7 +225,7 @@ public class GroupCategoryProcedureService implements GroupCategoryApiService {
         query.registerStoredProcedureParameter("P_ACTOR", String.class, ParameterMode.IN);
     }
 
-    private void setUpsertParameters(StoredProcedureQuery query, GroupCategoryUpsertRequest request) {
+    private void setUpsertParameters(StoredProcedureQuery query, GroupCategoryUpsertRequest request, String actor) {
         query.setParameter("P_PARAM_NAME", trim(request.paramName()));
         query.setParameter("P_PARAM_VALUE", trim(request.paramValue()));
         query.setParameter("P_PARAM_TYPE", trim(request.paramType()));
@@ -232,7 +234,7 @@ public class GroupCategoryProcedureService implements GroupCategoryApiService {
         query.setParameter("P_IS_ACTIVE", request.isActive() == null ? 1 : request.isActive());
         query.setParameter("P_EFFECTIVE_DATE", timestamp(request.effectiveDate()));
         query.setParameter("P_END_EFFECTIVE_DATE", timestamp(request.endEffectiveDate()));
-        query.setParameter("P_ACTOR", trim(request.actor()));
+        query.setParameter("P_ACTOR", trim(actor));
     }
 
     private Set<String> activeComponentCodes() {

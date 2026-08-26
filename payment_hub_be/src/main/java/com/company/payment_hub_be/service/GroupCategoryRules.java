@@ -34,7 +34,6 @@ public class GroupCategoryRules {
     requireText(request.paramName(), "PARAM_NAME");
     requireText(request.paramValue(), "PARAM_VALUE");
     requireText(request.paramType(), "PARAM_TYPE");
-    requireText(request.actor(), "actor");
     requireLength(request.paramName(), "PARAM_NAME", TEXT_255);
     requireLength(request.paramValue(), "PARAM_VALUE", TEXT_255);
     requireLength(request.paramType(), "PARAM_TYPE", TEXT_255);
@@ -42,6 +41,10 @@ public class GroupCategoryRules {
 
     if (request.effectiveDate() == null) {
         throw BusinessException.badRequest("EFFECTIVE_DATE is required");
+    }
+    //ngày hiệu lực khôgn được là quá khú
+    if (request.effectiveDate().isBefore(LocalDateTime.now())) {
+        throw BusinessException.badRequest("EFFECTIVE_DATE cannot be in the past");
     }
     if (request.endEffectiveDate() != null && request.endEffectiveDate().isBefore(request.effectiveDate())) {
         throw BusinessException.badRequest("END_EFFECTIVE_DATE must be greater than or equal to EFFECTIVE_DATE");
@@ -96,7 +99,6 @@ public void validateComponentCode(String componentCode, Set<String> activeCompon
 
     public void ensureCanReject(PmhGroupCategory entity, RejectRequest request) {
         ensureCanApprove(entity);
-        requireText(request == null ? null : request.actor(), "actor");
         requireText(request == null ? null : request.reason(), "reason");
         requireLength(request.reason(), "REJECT_REASON", REJECT_REASON_MAX);
     }
@@ -122,14 +124,12 @@ public void validateComponentCode(String componentCode, Set<String> activeCompon
         if (request == null || request.ids() == null || request.ids().isEmpty()) {
             throw BusinessException.badRequest("ids is required");
         }
-        validateActionActor(request.actor());
     }
 
     public void validateBatchReject(BatchRejectRequest request) {
         if (request == null || request.ids() == null || request.ids().isEmpty()) {
             throw BusinessException.badRequest("ids is required");
         }
-        validateActionActor(request.actor());
         requireText(request.reason(), "reason");
         requireLength(request.reason(), "REJECT_REASON", REJECT_REASON_MAX);
     }

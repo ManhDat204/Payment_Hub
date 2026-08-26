@@ -4,7 +4,6 @@ import java.util.List;
 
 public record BatchRejectRequest(
         List<Long> ids,
-        String actor,
         String reason
 ) {
 }

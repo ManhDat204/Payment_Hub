@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { GroupCategoryNavigationService, PageMode, NavigationState } from '../services/navigation.service';
 import { GroupCategoryListPageComponent } from './list/list-page.component';
-import { GroupCategoryAddPageComponent } from './add/add-page';
+import { GroupCategoryAddPageComponent } from './add/add-page.component';
 import { GroupCategoryDetailPageComponent } from './detail/detail-page.component';
-import { GroupCategoryApprovePageComponent } from './approve/approve-page';
+import { GroupCategoryApprovePageComponent } from './approve/approve-page.component';
 import { GroupCategoryHistoryPageComponent } from './history/historypage.component';
 
 @Component({
