@@ -131,10 +131,17 @@
   color: var(--gray-700);
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-reset:hover {
   background-color: #f8fafc;
+}
+
+.btn-reset svg {
+  flex-shrink: 0;
 }
 
 .btn-search {
@@ -148,8 +155,15 @@
   color: white;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-search:hover {
   background-color: #096668;
+}
+
+.btn-search svg {
+  flex-shrink: 0;
 }

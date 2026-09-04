@@ -1,10 +1,31 @@
-<!-- reject-reason-dialog.component.html -->
-<h3>Lý do từ chối</h3>
-<tui-text-area [formControl]="reasonControl" [maxLength]="500">
-    Nhập lý do từ chối
-</tui-text-area>
-<div class="char-count">{{ reasonControl.value?.length || 0 }}/500</div>
-<div class="dialog-footer">
-    <button tuiButton appearance="outline" (click)="cancel()">Hủy</button>
-    <button tuiButton appearance="primary" [disabled]="reasonControl.invalid" (click)="confirm()">Xác nhận</button>
+<!-- Dialog Overlay -->
+<div class="dialog-overlay" (click)="cancel()">
+  <div class="dialog-box" (click)="$event.stopPropagation()">
+    
+    <!-- Icon + Title -->
+    <div class="dialog-header">
+      <div class="dialog-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3 class="dialog-title">Lý do từ chối</h3>
+    </div>
+
+    <!-- Content -->
+    <div class="dialog-content">
+      <label class="form-label">Nhập lý do từ chối <span style="color: #ef4444;">*</span></label>
+      <tui-text-area [formControl]="reasonControl" [maxLength]="500">
+        Nhập lý do từ chối
+      </tui-text-area>
+      <div class="char-count">{{ reasonControl.value?.length || 0 }}/500</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="dialog-footer">
+      <button tuiButton appearance="outline" (click)="cancel()">Hủy</button>
+      <button tuiButton appearance="primary" [disabled]="reasonControl.invalid" (click)="confirm()">Xác nhận</button>
+    </div>
+
+  </div>
 </div>

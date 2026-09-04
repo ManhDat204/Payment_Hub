@@ -8,15 +8,18 @@
   </div>
 
   <div class="page-content">
-    <app-confirm-dialog
-      *ngIf="showConfirm && mode === 'approve'"
-      [config]="approveDialogConfig"
-      (confirmed)="onConfirmed($event)">
-    </app-confirm-dialog>
-
-    <app-reject-reason-dialog
-      *ngIf="showRejectReason && mode === 'reject'"
-      (reasonSubmitted)="onReasonSubmitted($event)">
-    </app-reject-reason-dialog>
+    <!-- Page content here -->
   </div>
 </div>
+
+<!-- Dialogs rendered outside page container -->
+<app-confirm-dialog
+  *ngIf="showConfirm && mode === 'approve'"
+  [config]="approveDialogConfig"
+  (confirmed)="onConfirmed($event)">
+</app-confirm-dialog>
+
+<app-reject-reason-dialog
+  *ngIf="showRejectReason && mode === 'reject'"
+  (reasonSubmitted)="onReasonSubmitted($event)">
+</app-reject-reason-dialog>

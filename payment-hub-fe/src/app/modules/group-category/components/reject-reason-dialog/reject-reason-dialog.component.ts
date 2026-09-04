@@ -7,6 +7,7 @@ import { TuiTextarea } from '@taiga-ui/kit';
 @Component({
   selector: 'app-reject-reason-dialog',
   templateUrl: './reject-reason-dialog.component.html',
+  styleUrls: ['./reject-reason-dialog.component.css'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [CommonModule, ReactiveFormsModule, TuiTextarea, TuiButton],

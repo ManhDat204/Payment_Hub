@@ -1,3 +1,4 @@
+/* Dialog Overlay */
 .dialog-overlay {
   position: fixed;
   top: 0;
@@ -23,7 +24,7 @@
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
-  max-width: 460px;
+  max-width: 500px;
   padding: 24px;
   animation: slideUp 0.25s ease;
   position: relative;
@@ -54,21 +55,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.icon-warning {
   background: #fef3c7;
   color: #f59e0b;
-}
-
-.icon-question {
-  background: #dbeafe;
-  color: #3b82f6;
-}
-
-.icon-info {
-  background: #e0e7ff;
-  color: #6366f1;
 }
 
 .dialog-title {
@@ -79,20 +67,11 @@
   line-height: 1.2;
 }
 
-.dialog-message {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #6b7280;
-  margin: 0 0 20px 0;
-  text-align: left;
-  padding-left: 52px;
-}
-
-.dialog-input-group {
+.dialog-content {
   margin-bottom: 20px;
 }
 
-.input-label {
+.form-label {
   display: block;
   font-size: 14px;
   font-weight: 500;
@@ -100,35 +79,21 @@
   margin-bottom: 8px;
 }
 
-.dialog-input {
-  width: 100%;
-  height: 42px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 0 14px;
-  font-size: 14px;
-  color: #111827;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.dialog-input:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-.dialog-input::placeholder {
+.char-count {
+  text-align: right;
+  font-size: 13px;
   color: #9ca3af;
+  margin-top: 6px;
 }
 
-.dialog-actions {
+.dialog-footer {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+  margin-top: 20px;
 }
 
-.btn-cancel,
-.btn-confirm {
+.dialog-footer button {
   height: 40px;
   padding: 0 20px;
   border-radius: 8px;
@@ -139,20 +104,47 @@
   border: none;
 }
 
-.btn-cancel {
+.dialog-footer button[appearance="outline"] {
   background: #f3f4f6;
   color: #374151;
 }
 
-.btn-cancel:hover {
+.dialog-footer button[appearance="outline"]:hover {
   background: #e5e7eb;
 }
 
-.btn-confirm {
+.dialog-footer button[appearance="primary"] {
   background: #10b981;
   color: white;
 }
 
-.btn-confirm:hover {
+.dialog-footer button[appearance="primary"]:hover {
   background: #059669;
+}
+
+.dialog-footer button[appearance="primary"]:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* Override Taiga UI textarea styles */
+::ng-deep tui-text-area {
+  display: block;
+}
+
+::ng-deep tui-text-area textarea {
+  min-height: 100px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  color: #111827;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+::ng-deep tui-text-area textarea:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  outline: none;
 }
