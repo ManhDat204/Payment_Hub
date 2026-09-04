@@ -12,12 +12,13 @@ import { ConfirmDialogComponent, ConfirmDialogConfig } from '../../components/co
 import { DetailDialogComponent } from '../../components/detail-dialog/detail-dialog';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthService } from '../../../../core/services/auth.service';
-
+import { HistoryDialogComponent } from '../../components/history-dialog/history-dialog';
 @Component({
   selector: 'app-group-category-list-page',
   templateUrl: './list-page.component.html',
+  styleUrl: './list-page.component.css',
   standalone: true,
-  imports: [SearchFilterComponent, DataGridComponent, ConfirmDialogComponent, DetailDialogComponent, CommonModule],
+  imports: [SearchFilterComponent, DataGridComponent, ConfirmDialogComponent, DetailDialogComponent,HistoryDialogComponent, CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupCategoryListPageComponent implements OnInit {
@@ -37,6 +38,7 @@ export class GroupCategoryListPageComponent implements OnInit {
   showRejectDialog = false;
   showCancelApprovalDialog = false;
   showDeleteDialog = false;
+  showHistoryDialog = false;
   
   submitDialogConfig: ConfirmDialogConfig = {
     title: 'Gửi duyệt',
@@ -106,7 +108,7 @@ export class GroupCategoryListPageComponent implements OnInit {
   private createDefaultFilter(): GroupCategoryFilter {
     return {
       page: 1,
-      pageSize: 20,
+      pageSize: 10,
       sortField: 'updatedDate',
       sortOrder: 'DESC',
     };
@@ -186,11 +188,7 @@ export class GroupCategoryListPageComponent implements OnInit {
     this.cdr.markForCheck();
   }
   onDetailAction(action: 'approve' | 'reject' | 'submit' | 'cancel' | 'delete' | 'history' | null): void {
-    console.log('🟢 List page: onDetailAction received:', action);
-    
     if (!action) {
-      // Close dialog
-      console.log('🟢 Closing detail dialog');
       this.showDetailDialog = false;
       this.selectedRecord = null;
       this.selectedDiff = null;
@@ -198,36 +196,31 @@ export class GroupCategoryListPageComponent implements OnInit {
       return;
     }
 
-    // Close detail dialog first
     this.showDetailDialog = false;
-
-    // Handle action with selected record
     if (action === 'submit') {
-      console.log('🟢 Opening submit confirm dialog');
       this.submitDialogConfig = {
         ...this.submitDialogConfig,
         message: 'Bạn có chắc chắn gửi duyệt bản ghi này?',
       };
       this.showSubmitDialog = true;
     } else if (action === 'approve') {
-      console.log('🟢 Opening approve confirm dialog');
+
       this.approveDialogConfig = {
         ...this.approveDialogConfig,
         message: 'Bạn có chắc chắn phê duyệt bản ghi này?',
       };
       this.showApproveDialog = true;
     } else if (action === 'reject') {
-      console.log('🟢 Opening reject confirm dialog');
       this.showRejectDialog = true;
     } else if (action === 'cancel') {
-      console.log('🟢 Opening cancel approval confirm dialog');
+
       this.cancelApprovalDialogConfig = {
         ...this.cancelApprovalDialogConfig,
         message: 'Bạn có chắc chắn hủy phê duyệt bản ghi này?',
       };
       this.showCancelApprovalDialog = true;
     } else if (action === 'delete' && this.selectedRecord) {
-      console.log('🟢 Opening delete confirm dialog');
+  
       this.deleteDialogConfig = {
         ...this.deleteDialogConfig,
         message: 'Bạn có chắc chắn xóa bản ghi này?',
@@ -289,6 +282,15 @@ export class GroupCategoryListPageComponent implements OnInit {
           this.toastService.error('Lỗi xuất Excel: ' + (err.error?.message || err.message));
         }
       });
+  }
+  onViewAllHistory(): void {
+    this.showHistoryDialog = true;
+    this.cdr.markForCheck();
+  }
+
+  onCloseHistoryDialog(): void {
+    this.showHistoryDialog = false;
+    this.cdr.markForCheck();
   }
 
   onBatchSubmit(): void {

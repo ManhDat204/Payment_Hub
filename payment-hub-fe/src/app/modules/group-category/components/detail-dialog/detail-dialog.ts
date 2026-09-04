@@ -8,6 +8,7 @@ type Action = 'approve' | 'reject' | 'submit' | 'cancel' | 'delete' | 'history';
 @Component({
   selector: 'app-group-category-detail-dialog',
   templateUrl: './detail-dialog.html',
+  styleUrl: './detail-dialog.css',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [CommonModule],

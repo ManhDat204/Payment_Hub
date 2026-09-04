@@ -12,6 +12,7 @@ export interface FormDialogData {
 @Component({
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.html',
+  styleUrl: './form-dialog.css',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
 })

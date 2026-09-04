@@ -38,15 +38,14 @@
                 <div class="user-cell">
                   <span class="user-avatar">{{ getInitials(log) }}</span>
                   <span class="user-info">
-                    <strong>{{ log.userName || log.userId || '-' }}</strong>
-                    <span>Mã CB: {{ log.userId || '-' }}</span>
+                    <strong>{{ log.actionBy || '-' }}</strong>
                   </span>
                 </div>
               </td>
-              <td>{{ log.actionAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-              <td>{{ log.action || '-' }}</td>
+              <td>{{ log.actionTime | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td>{{ getActionLabel(log.actionType) }}</td>
               <td>{{ log.ip || '-' }}</td>
-              <td class="content-cell" [title]="log.content">{{ log.content || '-' }}</td>
+              <td class="content-cell" [title]="log.description">{{ log.description || '-' }}</td>
             </tr>
           </tbody>
         </table>

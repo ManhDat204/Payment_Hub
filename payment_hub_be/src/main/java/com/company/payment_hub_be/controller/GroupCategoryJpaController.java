@@ -1,6 +1,6 @@
 package com.company.payment_hub_be.controller;
 
-import com.company.payment_hub_be.payload.response.HistoryLogResponse;
+import com.company.payment_hub_be.payload.response.HistoryResponse;
 import com.company.payment_hub_be.payload.response.PageResponse;
 import com.company.payment_hub_be.service.GroupCategoryApiService;
 import com.company.payment_hub_be.service.PmhHistoryService;
@@ -25,7 +25,7 @@ public class GroupCategoryJpaController extends GroupCategoryController {
     }
 
     @GetMapping("/{id}/history")
-    public PageResponse<HistoryLogResponse> history(
+    public PageResponse<HistoryResponse> history(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

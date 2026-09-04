@@ -3,7 +3,7 @@ package com.company.payment_hub_be.service.implement;
 import com.company.payment_hub_be.entity.PmhHistory;
 
 import com.company.payment_hub_be.entity.User;
-import com.company.payment_hub_be.payload.response.HistoryLogResponse;
+import com.company.payment_hub_be.payload.response.HistoryResponse;
 import com.company.payment_hub_be.payload.response.PageResponse;
 import com.company.payment_hub_be.repository.PmhHistoryCategory;
 import com.company.payment_hub_be.repository.UserRepository;
@@ -28,7 +28,7 @@ public class PmhHistoryServiceImpl implements PmhHistoryService {
     }
 
     @Override
-    public PageResponse<HistoryLogResponse> getGroupCategoryHistory(Long id, int page, int size) {
+    public PageResponse<HistoryResponse> getGroupCategoryHistory(Long id, int page, int size) {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 100);
         return PageResponse.from(historyRepository
@@ -40,10 +40,10 @@ public class PmhHistoryServiceImpl implements PmhHistoryService {
                 .map(this::toResponse));
     }
 
-    private HistoryLogResponse toResponse(PmhHistory history) {
+    private HistoryResponse toResponse(PmhHistory history) {
         String actionBy = history.getActionBy();
         String action = actionLabel(history);
-        return new HistoryLogResponse(
+        return new HistoryResponse(
                 history.getId(),
                 actionBy,
                 displayName(actionBy),

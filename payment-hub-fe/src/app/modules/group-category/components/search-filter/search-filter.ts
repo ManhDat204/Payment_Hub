@@ -17,6 +17,7 @@ interface Option<T> {
     ReactiveFormsModule
   ],
   templateUrl: './search-filter.html',
+  styleUrl: './search-filter.css',
 })
 export class SearchFilterComponent {
   @Output() search = new EventEmitter<GroupCategoryFilter>();

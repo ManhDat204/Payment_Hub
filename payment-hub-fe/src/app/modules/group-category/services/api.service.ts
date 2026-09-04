@@ -121,6 +121,9 @@ export class GroupCategoryApiService {
     const params = new HttpParams().set('page', page - 1).set('size', pageSize);
     return this.http.get<PagedResult<HistoryLog>>(`${BASE_URL}/${id}/history`, { params });
   }
+  getAllHistory(): Observable<HistoryLog[]> {
+    return this.http.get<HistoryLog[]>('/api/history');
+  }
 
   /** Xuất Excel theo bộ lọc hiện tại */
   exportExcel(filter: GroupCategoryFilter): Observable<Blob> {

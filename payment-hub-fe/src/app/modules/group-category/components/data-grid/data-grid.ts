@@ -19,6 +19,7 @@ interface ColumnDef {
 @Component({
   selector: 'app-group-category-grid',
   templateUrl: './data-grid.html',
+  styleUrl: './data-grid.css',
   standalone: true,
   imports: [CommonModule, GroupCategoryPaginationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -83,7 +84,7 @@ export class DataGridComponent  {
     return !!this.data?.content.length && this.data.content.every(item => this.selectedIds.has(item.id));
   }
 
-  // Sort handling
+  
   onSort(column: ColumnDef): void {
     if (!column.sortable) return;
     

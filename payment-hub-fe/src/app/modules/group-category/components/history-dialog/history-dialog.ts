@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { GroupCategoryApiService, PagedResult } from '../../services/api.service';
@@ -12,9 +12,10 @@ import { GroupCategoryPaginationComponent } from '../pagination/pagination.compo
   standalone: true,
   imports: [CommonModule, GroupCategoryPaginationComponent],
 })
-export class HistoryDialogComponent implements OnInit, OnChanges {
-  @Input() id: number = 0;
+export class HistoryDialogComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
+
+  private allLogs: HistoryLog[] = [];
 
   data: PagedResult<HistoryLog> | null = null;
   page = 1;
@@ -23,39 +24,68 @@ export class HistoryDialogComponent implements OnInit, OnChanges {
   errorMessage = '';
   selectedLogId: number | null = null;
 
-  constructor(private readonly api: GroupCategoryApiService) {}
+  private readonly actionLabels: Record<string, string> = {
+    CREATE: 'Thêm mới',
+    UPDATE: 'Cập nhật',
+    SUBMIT: 'Gửi duyệt',
+    APPROVE: 'Phê duyệt',
+    REJECT: 'Từ chối',
+    CANCEL_APPROVE: 'Hủy phê duyệt',
+    DELETE: 'Xóa',
+  };
+
+  constructor(
+    private readonly api: GroupCategoryApiService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.load();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['id'] && !changes['id'].firstChange) {
-      this.page = 1;
-      this.load();
-    }
-  }
-
   load(): void {
-    if (!this.id) {
-      this.data = this.emptyData();
-      return;
-    }
-
     this.loading = true;
     this.errorMessage = '';
-    this.api.getHistory(this.id, this.page, this.pageSize)
-      .pipe(finalize(() => (this.loading = false)))
+    this.cdr.markForCheck();
+
+    this.api.getAllHistory()
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }))
       .subscribe({
-        next: (res) => {
-          this.data = res;
-          this.selectedLogId = res.content[0]?.id ?? null;
+        next: (logs) => {
+          this.allLogs = (logs ?? []).map((log) => ({
+            ...log,
+            actionTime: this.normalizeDate(log.actionTime),
+          }));
+          this.page = 1;
+          this.applyPage();
         },
         error: (error) => {
+          this.allLogs = [];
           this.data = this.emptyData();
           this.errorMessage = error?.error?.message || error?.message || 'Không tải được lịch sử thao tác';
+          this.cdr.markForCheck();
         },
       });
+  }
+
+  private applyPage(): void {
+    const totalElements = this.allLogs.length;
+    const totalPages = Math.max(1, Math.ceil(totalElements / this.pageSize));
+    const start = (this.page - 1) * this.pageSize;
+    const content = this.allLogs.slice(start, start + this.pageSize);
+
+    this.data = {
+      content,
+      totalElements,
+      totalPages,
+      page: this.page - 1,
+      size: this.pageSize,
+    };
+    this.selectedLogId = content[0]?.id ?? null;
+    this.cdr.markForCheck();
   }
 
   onPageChange(page: number): void {
@@ -64,7 +94,7 @@ export class HistoryDialogComponent implements OnInit, OnChanges {
     }
 
     this.page = page;
-    this.load();
+    this.applyPage();
   }
 
   onClose(): void {
@@ -75,8 +105,13 @@ export class HistoryDialogComponent implements OnInit, OnChanges {
     this.selectedLogId = log.id ?? null;
   }
 
+  getActionLabel(actionType: string | null | undefined): string {
+    if (!actionType) return '-';
+    return this.actionLabels[actionType] ?? actionType;
+  }
+
   getInitials(log: HistoryLog): string {
-    const name = (log.userName || log.userId || '').trim();
+    const name = (log.actionBy || '').trim();
     if (!name) {
       return '--';
     }
@@ -87,6 +122,11 @@ export class HistoryDialogComponent implements OnInit, OnChanges {
 
   trackByLogId(index: number, log: HistoryLog): number {
     return log.id ?? index;
+  }
+
+  private normalizeDate(value: string | null | undefined): string | null {
+    if (!value) return null;
+    return value.replace(/(\.\d{3})\d*/, '$1');
   }
 
   private emptyData(): PagedResult<HistoryLog> {

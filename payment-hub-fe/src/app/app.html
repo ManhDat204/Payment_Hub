@@ -1,4 +1,56 @@
-﻿<div class="paymenthub-shell">
+<div class="paymenthub-shell">
+  <!-- Icon rail xanh đậm -->
+  <aside class="icon-rail">
+    <div class="icon-rail-top">
+      <button class="rail-item" title="Tổng quan">
+        <span class="rail-icon">⌂</span>
+        <span class="rail-label">Tổng quan</span>
+      </button>
+      <button class="rail-item" title="Tham số">
+        <span class="rail-icon">☰</span>
+        <span class="rail-label">Tham số</span>
+      </button>
+      <button class="rail-item active" title="Tham số">
+        <span class="rail-icon">☰</span>
+        <span class="rail-label">Realtime</span>
+      </button>
+      <button class="rail-item" title="Non-Realtime">
+        <span class="rail-icon">☰</span>
+        <span class="rail-label">Non-Realtime</span>
+      </button>
+      <button class="rail-item" title="IMAP">
+        <span class="rail-icon">☰</span>
+        <span class="rail-label">IMAP</span>
+      </button>
+      <button class="rail-item" title="SWIFT">
+        <span class="rail-icon">☰</span>
+        <span class="rail-label">SWIFT</span>
+      </button>
+      <button class="rail-item" title="Kiểu hồi">
+        <span class="rail-icon">↺</span>
+        <span class="rail-label">Kiểu hồi</span>
+      </button>
+      <button class="rail-item" title="Tra soát">
+        <span class="rail-icon">🔍</span>
+        <span class="rail-label">Tra soát</span>
+      </button>
+      <button class="rail-item" title="Tham số">
+        <span class="rail-icon">☰</span>
+        <span class="rail-label">Tham số</span>
+      </button>
+      <button class="rail-item" title="Lải phí">
+        <span class="rail-icon">$</span>
+        <span class="rail-label">Lải phí</span>
+      </button>
+    </div>
+
+    <div class="icon-rail-bottom">
+      <button class="rail-item" title="Đăng xuất" (click)="onLogout()">
+        <span class="rail-icon">⏻</span>
+        <span class="rail-label">Đăng xuất</span>
+      </button>
+    </div>
+  </aside>
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-mark">
@@ -42,18 +94,12 @@
       <div class="topbar-actions">
         <button class="icon-btn" aria-label="Notifications">🔔</button>
         <div class="language-select">VIE ▾</div>
-        <div class="user-box" style="position: relative;">
+        <div class="user-box">
           <div class="avatar">H</div>
           <div class="user-meta">
             <div class="user-name">Hoàng Văn Thuận</div>
             <div class="user-role">Chuyên viên</div>
           </div>
-          <button (click)="onLogout()" 
-                  class="logout-btn"
-                  style="margin-left: 12px; padding: 6px 12px; font-size: 12px; border: 1px solid #E5E7EB; border-radius: 4px; background: white; color: #6B7280; cursor: pointer; transition: all 0.2s;"
-                  title="Đăng xuất">
-            Đăng xuất
-          </button>
         </div>
       </div>
     </header>

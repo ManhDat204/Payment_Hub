@@ -57,7 +57,7 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         LoginResponse response = new LoginResponse(
-                null, // không trả token khi get current user
+                null,
                 user.getUsername(),
                 user.getFullName(),
                 user.getRole()

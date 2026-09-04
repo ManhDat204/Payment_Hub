@@ -37,6 +37,7 @@ function effectiveDateRangeValidator(control: AbstractControl): ValidationErrors
 @Component({
   selector: 'app-group-category-add-page',
   templateUrl: './add-page.component.html',
+  styleUrl: './add-page.component.css',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
   imports: [CommonModule, ReactiveFormsModule],

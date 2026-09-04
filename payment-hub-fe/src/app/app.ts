@@ -3,10 +3,12 @@ import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { AuthService } from './core/services/auth.service';
+import { TuiIcon } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, ToastComponent],
+  standalone: true,
+  imports: [TuiIcon, RouterOutlet, CommonModule, ToastComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
