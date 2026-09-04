@@ -155,20 +155,16 @@ export class GroupCategoryAddPageComponent implements OnInit {
   }
 
   save(): void {
-    console.log('🔵 Save clicked, form valid:', this.form.valid);
-
     if (this.isApprovedUpdateBlocked()) {
       return;
     }
     
     if (!this.form.valid) {
-      console.log('❌ Form invalid');
       this.form.markAllAsTouched();
       this.toastService.error('Vui lòng điền đầy đủ thông tin bắt buộc');
       return;
     }
     
-    console.log('✅ Form valid, calling API...');
     this.saving = true;
     const formValue = this.form.getRawValue() as GroupCategoryFormValue;
     
@@ -181,14 +177,11 @@ export class GroupCategoryAddPageComponent implements OnInit {
 
     apiCall.subscribe({
       next: () => {
-        console.log('✅ Save success, redirecting...');
         this.saving = false;
         this.toastService.success(this.successMessage(false));
-        // Redirect ngay lập tức, toast sẽ hiển thị trên list page
         this.navigationService.navigateToList();
       },
       error: (error) => {
-        console.error('❌ Save error:', error);
         this.saving = false;
         
         let errorMsg = 'Lỗi lưu dữ liệu';
@@ -210,7 +203,6 @@ export class GroupCategoryAddPageComponent implements OnInit {
           errorMsg = 'Lỗi hệ thống. Vui lòng thử lại sau';
         }
         
-        console.log('🔴 Showing error toast:', errorMsg);
         this.toastService.error(errorMsg);
       }
     });
@@ -244,7 +236,6 @@ export class GroupCategoryAddPageComponent implements OnInit {
       },
       error: (error) => {
         this.saving = false;
-        console.error('❌ Lỗi lưu dữ liệu:', error);
         
         let errorMsg = 'Lỗi lưu và gửi duyệt';
         

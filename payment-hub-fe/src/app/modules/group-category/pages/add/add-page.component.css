@@ -45,16 +45,23 @@
 }
 
 .btn-close {
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
+  background: white;
+  border: 1.5px solid #0B7B7D;
+  border-radius: 6px;
   cursor: pointer;
-  color: #6B7280;
+  color: #0B7B7D;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: #f0f9f9;
+  border-color: #096668;
 }
 
 .btn-save {
@@ -74,6 +81,11 @@
   color: #0B7B7D;
 }
 
+.btn-save:hover {
+  background: #f0f9f9;
+  border-color: #096668;
+}
+
 .btn-submit {
   height: 34px;
   padding: 0 14px;
@@ -87,8 +99,24 @@
   justify-content: center;
   gap: 6px;
   background: #0B7B7D;
+  border: 1.5px solid #0B7B7D;
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #096668;
+  border-color: #096668;
+} display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #0B7B7D;
   border: none;
   color: white;
+}
+
+.btn-submit:hover {
+  background: #096668;
 }
 
 .form-card {

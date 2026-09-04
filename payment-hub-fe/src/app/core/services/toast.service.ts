@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 export interface Toast {
   id: number;
@@ -12,6 +13,9 @@ export interface Toast {
 export class ToastService {
   private toasts: Toast[] = [];
   private nextId = 1;
+  private toastsSubject = new BehaviorSubject<Toast[]>([]);
+  
+  public toasts$ = this.toastsSubject.asObservable();
 
   getToasts(): Toast[] {
     return this.toasts;
@@ -37,6 +41,7 @@ export class ToastService {
     };
 
     this.toasts.push(toast);
+    this.toastsSubject.next([...this.toasts]);
 
     // Auto remove after 3 seconds
     setTimeout(() => {
@@ -46,5 +51,6 @@ export class ToastService {
 
   remove(id: number): void {
     this.toasts = this.toasts.filter(t => t.id !== id);
+    this.toastsSubject.next([...this.toasts]);
   }
 }
