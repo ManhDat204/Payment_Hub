@@ -135,7 +135,9 @@ public class GroupCategoryJpaServiceImpl implements GroupCategoryApiService {
             entity.setNewData(mapper.toDraftJson(draft));
         } else {
             mapper.applyRequest(entity, request);
-            entity.setStatus(ParamStatus.NEW);
+            if (entity.getStatus() != ParamStatus.PENDING) {
+                entity.setStatus(ParamStatus.NEW);
+            }
             entity.setNewData(null);
         }
         entity.setRejectReason(null);

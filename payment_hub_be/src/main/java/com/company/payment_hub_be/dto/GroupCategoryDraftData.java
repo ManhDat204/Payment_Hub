@@ -1,5 +1,6 @@
 package com.company.payment_hub_be.dto;
 
+import com.company.payment_hub_be.entity.PmhGroupCategory;
 import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
 
 import java.time.LocalDateTime;
@@ -33,7 +34,21 @@ public record GroupCategoryDraftData(
         );
     }
 
-        public static GroupCategoryDraftData cancelApproval() {
+    public static GroupCategoryDraftData fromEntity(PmhGroupCategory entity) {
+        return new GroupCategoryDraftData(
+                null,
+                entity.getParamName(),
+                entity.getParamValue(),
+                entity.getParamType(),
+                entity.getDescription(),
+                entity.getComponent() != null ? entity.getComponent().getComponentCode() : null,
+                entity.getIsActive() != null ? entity.getIsActive().getCode() : null,
+                entity.getEffectiveDate(),
+                entity.getEndEffectiveDate()
+        );
+    }
+
+    public static GroupCategoryDraftData cancelApproval() {
         return new GroupCategoryDraftData(
                 ACTION_CANCEL_APPROVAL,
                 null,

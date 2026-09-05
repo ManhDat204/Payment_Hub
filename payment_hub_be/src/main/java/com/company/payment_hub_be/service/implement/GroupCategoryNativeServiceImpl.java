@@ -100,15 +100,13 @@ public class GroupCategoryNativeServiceImpl implements GroupCategoryApiService {
         rules.ensureUnique(existsByBusinessKey(request.paramType(), request.paramValue(), id));
 
         String validatedActor = rules.actor(actor);
-        if (entity.getIsDisplay() == DisplayFlag.WAS_APPROVED) {
-            GroupCategoryDraftData draft = GroupCategoryDraftData.update(request);
-            rules.validateDraftFits(draft);
-            entity.setNewData(mapper.toDraftJson(draft));
-        } else {
-            mapper.applyRequest(entity, request);
-            entity.setStatus(ParamStatus.NEW);
-            entity.setNewData(null);
-        }
+        
+        // Lưu dữ liệu cũ vào newData trước khi update entity
+        GroupCategoryDraftData oldDraft = GroupCategoryDraftData.fromEntity(entity);
+        entity.setNewData(mapper.toDraftJson(oldDraft));
+        
+        // Update entity với dữ liệu mới
+        mapper.applyRequest(entity, request);
         entity.setRejectReason(null);
         rules.touchUpdate(entity, actor);
         updateAllColumns(entity);
@@ -172,8 +170,6 @@ public class GroupCategoryNativeServiceImpl implements GroupCategoryApiService {
         String actor = SecurityUtil.getCurrentUsername();
         System.out.println("📝 Native requestCancelApproval() - actor from SecurityUtil: " + actor);
         rules.ensureCanRequestCancelApproval(entity);
-        
-        // Chuyển trực tiếp từ STATUS 4 (Đã duyệt) → 7 (Hủy duyệt)
         entity.setStatus(ParamStatus.CANCELLED);
         entity.setIsActive(ActiveStatus.INACTIVE);
         entity.setNewData(null);

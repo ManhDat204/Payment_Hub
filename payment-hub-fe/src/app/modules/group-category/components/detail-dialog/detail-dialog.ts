@@ -23,6 +23,12 @@ export class DetailDialogComponent {
     return (this.diff.changedFields as string[]).includes(field);
   }
 
+  formatDateTime(datetime: string | null | undefined): string {
+    if (!datetime) return '-';
+    // Bỏ chữ T: "2024-12-24T12:05:00" -> "2024-12-24 12:05:00"
+    return datetime.replace('T', ' ');
+  }
+
   get showSubmit(): boolean {
     if (!this.record) return false;
     return [ParamStatus.NEW, ParamStatus.REJECTED, ParamStatus.CANCELLED].includes(this.record.status);
