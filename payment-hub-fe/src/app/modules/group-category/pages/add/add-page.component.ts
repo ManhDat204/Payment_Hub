@@ -65,7 +65,7 @@ export class GroupCategoryAddPageComponent implements OnInit {
       componentCode: ['', Validators.required],
       description: ['', Validators.maxLength(4000)],
       effectiveDate: ['', [Validators.required, noPastDateValidator]],
-      endEffectiveDate: ['', [noPastDateValidator]]
+      endEffectiveDate: [Validators.required, [noPastDateValidator]]
     }, { validators: effectiveDateRangeValidator });
   }
 

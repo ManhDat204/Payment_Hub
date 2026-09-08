@@ -12,7 +12,7 @@ export const ParamStatusLabel: Record<ParamStatus, string> = {
   [ParamStatus.PENDING]: 'Chờ duyệt',
   [ParamStatus.APPROVED]: 'Đã duyệt',
   [ParamStatus.REJECTED]: 'Từ chối',
-  [ParamStatus.CANCELLED]: 'Hủy duyệt',
+  [ParamStatus.CANCELLED]: 'Hủy phê duyệt',
 };
 
 export enum IsActive {

@@ -74,7 +74,7 @@ public class GroupCategoryMapper {
                 component.getId(),
                 component.getComponentCode(),
                 component.getComponentName(),
-                component.getDescription(),
+                null, // description removed
                 code(component.getIsActive()),
                 label(component.getIsActive())
         );

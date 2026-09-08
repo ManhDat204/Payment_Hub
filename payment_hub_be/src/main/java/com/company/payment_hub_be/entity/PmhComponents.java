@@ -35,22 +35,7 @@ public class PmhComponents {
     @Column(name = "COMPONENT_NAME", length = 255)
     private String componentName;
 
-    @Column(name = "DESCRIPTION", length = 255)
-    private String description;
-
     @Convert(converter = ActiveStatus.ConverterImpl.class)
     @Column(name = "IS_ACTIVE", nullable = false)
     private ActiveStatus isActive;
-
-    @Column(name = "CREATED_BY", length = 50)
-    private String createdBy;
-
-    @Column(name = "CREATED_DATE")
-    private LocalDateTime createdDate;
-
-    @Column(name = "UPDATED_BY", length = 50)
-    private String updatedBy;
-
-    @Column(name = "UPDATED_DATE")
-    private LocalDateTime updatedDate;
 }
