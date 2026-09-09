@@ -4,7 +4,7 @@ import com.company.payment_hub_be.payload.request.ActionRequest;
 import com.company.payment_hub_be.payload.response.ComponentResponse;
 import com.company.payment_hub_be.payload.response.GroupCategoryResponse;
 import com.company.payment_hub_be.dto.GroupCategorySearchCriteria;
-import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
+import com.company.payment_hub_be.payload.request.GroupCategoryRequest;
 import com.company.payment_hub_be.payload.response.PageResponse;
 import com.company.payment_hub_be.payload.request.RejectRequest;
 
@@ -15,9 +15,9 @@ public interface GroupCategoryApiService {
 
     GroupCategoryResponse getById(Long id);
 
-    GroupCategoryResponse create(GroupCategoryUpsertRequest request, String actor, boolean submit);
+    GroupCategoryResponse create(GroupCategoryRequest request, String actor, boolean submit);
 
-    GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request, String actor);
+    GroupCategoryResponse update(Long id, GroupCategoryRequest request, String actor);
 
     GroupCategoryResponse submit(Long id, ActionRequest request);
 

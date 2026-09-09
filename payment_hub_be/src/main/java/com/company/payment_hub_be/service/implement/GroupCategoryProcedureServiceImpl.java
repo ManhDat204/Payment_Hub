@@ -5,7 +5,7 @@ import com.company.payment_hub_be.payload.request.ActionRequest;
 import com.company.payment_hub_be.payload.response.ComponentResponse;
 import com.company.payment_hub_be.payload.response.GroupCategoryResponse;
 import com.company.payment_hub_be.dto.GroupCategorySearchCriteria;
-import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
+import com.company.payment_hub_be.payload.request.GroupCategoryRequest;
 import com.company.payment_hub_be.payload.response.PageResponse;
 import com.company.payment_hub_be.service.GroupCategoryApiService;
 import com.company.payment_hub_be.service.GroupCategoryRules;
@@ -78,7 +78,7 @@ public class GroupCategoryProcedureServiceImpl implements GroupCategoryApiServic
     }
 
     @Override
-    public GroupCategoryResponse create(GroupCategoryUpsertRequest request, String actor, boolean submit) {
+    public GroupCategoryResponse create(GroupCategoryRequest request, String actor, boolean submit) {
         rules.validateUpsert(request, activeComponentCodes());
         Long id = callReturningId(PACKAGE + "CREATE_PARAM", query -> {
             registerUpsertParameters(query);
@@ -90,7 +90,7 @@ public class GroupCategoryProcedureServiceImpl implements GroupCategoryApiServic
     }
 
     @Override
-    public GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request, String actor) {
+    public GroupCategoryResponse update(Long id, GroupCategoryRequest request, String actor) {
         rules.validateUpsert(request, activeComponentCodes());
         Long updatedId = callReturningId(PACKAGE + "UPDATE_PARAM", query -> {
             query.registerStoredProcedureParameter("P_ID_IN", Long.class, ParameterMode.IN);
@@ -225,7 +225,7 @@ public class GroupCategoryProcedureServiceImpl implements GroupCategoryApiServic
         query.registerStoredProcedureParameter("P_ACTOR", String.class, ParameterMode.IN);
     }
 
-    private void setUpsertParameters(StoredProcedureQuery query, GroupCategoryUpsertRequest request, String actor) {
+    private void setUpsertParameters(StoredProcedureQuery query, GroupCategoryRequest request, String actor) {
         query.setParameter("P_PARAM_NAME", trim(request.paramName()));
         query.setParameter("P_PARAM_VALUE", trim(request.paramValue()));
         query.setParameter("P_PARAM_TYPE", trim(request.paramType()));

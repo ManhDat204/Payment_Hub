@@ -7,7 +7,7 @@ import com.company.payment_hub_be.payload.response.ComponentResponse;
 import com.company.payment_hub_be.dto.GroupCategoryDraftData;
 import com.company.payment_hub_be.payload.response.GroupCategoryResponse;
 import com.company.payment_hub_be.repository.ComponentRepository;
-import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
+import com.company.payment_hub_be.payload.request.GroupCategoryRequest;
 import com.company.payment_hub_be.exception.BusinessException;
 import com.company.payment_hub_be.entity.PmhComponents;
 import com.company.payment_hub_be.entity.PmhGroupCategory;
@@ -80,7 +80,7 @@ public class GroupCategoryMapper {
         );
     }
 
-    public PmhGroupCategory toNewEntity(GroupCategoryUpsertRequest request, String actor) {
+    public PmhGroupCategory toNewEntity(GroupCategoryRequest request, String actor) {
     PmhGroupCategory entity = new PmhGroupCategory();
     entity.setParamName(request.paramName().trim());
     entity.setParamValue(request.paramValue().trim());
@@ -95,7 +95,7 @@ public class GroupCategoryMapper {
     return entity;
 }
 
-    public void applyRequest(PmhGroupCategory entity, GroupCategoryUpsertRequest request) {
+    public void applyRequest(PmhGroupCategory entity, GroupCategoryRequest request) {
     entity.setParamName(request.paramName().trim());
     entity.setParamValue(request.paramValue().trim());
     entity.setParamType(request.paramType().trim());

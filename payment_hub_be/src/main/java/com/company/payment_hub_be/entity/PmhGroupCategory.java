@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +24,9 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "PMH_GROUP_CATEGORY")
+@Table(name = "PMH_GROUP_CATEGORY", uniqueConstraints = {
+    @UniqueConstraint(name = "UK_PMH_GROUP_CATEGORY_TYPE", columnNames = {"PARAM_TYPE"})
+})
 @Getter
 @Setter
 @NoArgsConstructor

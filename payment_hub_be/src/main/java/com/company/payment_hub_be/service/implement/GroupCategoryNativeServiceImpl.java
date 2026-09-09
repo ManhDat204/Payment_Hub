@@ -9,7 +9,7 @@ import com.company.payment_hub_be.payload.response.ComponentResponse;
 import com.company.payment_hub_be.dto.GroupCategoryDraftData;
 import com.company.payment_hub_be.payload.response.GroupCategoryResponse;
 import com.company.payment_hub_be.dto.GroupCategorySearchCriteria;
-import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
+import com.company.payment_hub_be.payload.request.GroupCategoryRequest;
 import com.company.payment_hub_be.payload.response.PageResponse;
 import com.company.payment_hub_be.service.GroupCategoryApiService;
 import com.company.payment_hub_be.service.GroupCategoryRules;
@@ -77,10 +77,14 @@ public class GroupCategoryNativeServiceImpl implements GroupCategoryApiService {
     }
 
     @Override
-    public GroupCategoryResponse create(GroupCategoryUpsertRequest request, String actor, boolean submit) {
+    public GroupCategoryResponse create(GroupCategoryRequest request, String actor, boolean submit) {
         Set<String> activeCodes = activeComponentCodes();
         rules.validateUpsert(request, activeCodes);
-        rules.ensureUnique(existsByBusinessKey(request.paramType(), request.paramValue(), null));
+        
+        // Check duplicate paramType only
+        if (existsByParamType(request.paramType(), null)) {
+            throw BusinessException.conflict("Danh mục theo nhóm '" + request.paramType() + "' đã tồn tại");
+        }
 
         String validatedActor = rules.actor(actor);
         PmhGroupCategory entity = mapper.toNewEntity(request, validatedActor);
@@ -93,11 +97,15 @@ public class GroupCategoryNativeServiceImpl implements GroupCategoryApiService {
     }
 
     @Override
-    public GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request, String actor) {
+    public GroupCategoryResponse update(Long id, GroupCategoryRequest request, String actor) {
         PmhGroupCategory entity = findById(id);
         Set<String> activeCodes = activeComponentCodes();
         rules.validateUpsert(request, activeCodes);
-        rules.ensureUnique(existsByBusinessKey(request.paramType(), request.paramValue(), id));
+        
+        // Check duplicate paramType only (excluding current record)
+        if (existsByParamType(request.paramType(), id)) {
+            throw BusinessException.conflict("Danh mục theo nhóm '" + request.paramType() + "' đã tồn tại");
+        }
 
         String validatedActor = rules.actor(actor);
         
@@ -137,7 +145,10 @@ public class GroupCategoryNativeServiceImpl implements GroupCategoryApiService {
         
         // Apply draft changes for update action
         if (draft != null && GroupCategoryDraftData.ACTION_UPDATE.equals(draft.action())) {
-            rules.ensureUnique(existsByBusinessKey(draft.paramType(), draft.paramValue(), id));
+            // Check duplicate paramType only (excluding current record)
+            if (existsByParamType(draft.paramType(), id)) {
+                throw BusinessException.conflict("Danh mục theo nhóm '" + draft.paramType() + "' đã tồn tại");
+            }
         }
         
         mapper.applyDraft(entity, draft);
@@ -322,6 +333,19 @@ public class GroupCategoryNativeServiceImpl implements GroupCategoryApiService {
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("paramType", paramType.trim());
         query.setParameter("paramValue", paramValue.trim());
+        if (excludedId != null) {
+            query.setParameter("id", excludedId);
+        }
+        return number(query.getSingleResult()).longValue() > 0;
+    }
+
+    private boolean existsByParamType(String paramType, Long excludedId) {
+        String sql = "SELECT COUNT(1) FROM PMH_GROUP_CATEGORY WHERE LOWER(PARAM_TYPE) = LOWER(:paramType)";
+        if (excludedId != null) {
+            sql += " AND ID <> :id";
+        }
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("paramType", paramType.trim());
         if (excludedId != null) {
             query.setParameter("id", excludedId);
         }

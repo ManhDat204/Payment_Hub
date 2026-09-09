@@ -5,7 +5,7 @@ import com.company.payment_hub_be.domain.ParamStatus;
 import com.company.payment_hub_be.payload.request.BatchActionRequest;
 import com.company.payment_hub_be.payload.request.BatchRejectRequest;
 import com.company.payment_hub_be.dto.GroupCategoryDraftData;
-import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
+import com.company.payment_hub_be.payload.request.GroupCategoryRequest;
 import com.company.payment_hub_be.payload.request.RejectRequest;
 import com.company.payment_hub_be.mapper.GroupCategoryMapper;
 import com.company.payment_hub_be.exception.BusinessException;
@@ -27,7 +27,7 @@ public class GroupCategoryRules {
         this.mapper = mapper;
     }
 
-    public void validateUpsert(GroupCategoryUpsertRequest request, Set<String> activeComponentCodes) {
+    public void validateUpsert(GroupCategoryRequest request, Set<String> activeComponentCodes) {
     if (request == null) {
         throw BusinessException.badRequest("Request body is required");
     }

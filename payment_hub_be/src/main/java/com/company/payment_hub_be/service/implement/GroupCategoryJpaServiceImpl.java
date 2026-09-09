@@ -11,7 +11,7 @@ import com.company.payment_hub_be.payload.response.ComponentResponse;
 import com.company.payment_hub_be.dto.GroupCategoryDraftData;
 import com.company.payment_hub_be.payload.response.GroupCategoryResponse;
 import com.company.payment_hub_be.dto.GroupCategorySearchCriteria;
-import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
+import com.company.payment_hub_be.payload.request.GroupCategoryRequest;
 import com.company.payment_hub_be.payload.response.PageResponse;
 import com.company.payment_hub_be.payload.request.RejectRequest;
 import com.company.payment_hub_be.exception.BusinessException;
@@ -88,7 +88,7 @@ public class GroupCategoryJpaServiceImpl implements GroupCategoryApiService {
     }
 
     @Override
-    public GroupCategoryResponse create(GroupCategoryUpsertRequest request, String actor, boolean submit) {
+    public GroupCategoryResponse create(GroupCategoryRequest request, String actor, boolean submit) {
         Set<String> activeCodes = activeComponentCodes();
         System.out.println("DEBUG create request.componentCode = " + request.componentCode());
         System.out.println("DEBUG activeCodes = " + activeCodes);
@@ -114,7 +114,7 @@ public class GroupCategoryJpaServiceImpl implements GroupCategoryApiService {
     }
 
     @Override
-    public GroupCategoryResponse update(Long id, GroupCategoryUpsertRequest request, String actor) {
+    public GroupCategoryResponse update(Long id, GroupCategoryRequest request, String actor) {
         PmhGroupCategory entity = findById(id);
         String oldData = historyPayload(entity);
         Set<String> activeCodes = activeComponentCodes();

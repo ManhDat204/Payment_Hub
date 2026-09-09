@@ -6,7 +6,7 @@ import com.company.payment_hub_be.payload.request.BatchRejectRequest;
 import com.company.payment_hub_be.payload.response.ComponentResponse;
 import com.company.payment_hub_be.payload.response.GroupCategoryResponse;
 import com.company.payment_hub_be.dto.GroupCategorySearchCriteria;
-import com.company.payment_hub_be.payload.request.GroupCategoryUpsertRequest;
+import com.company.payment_hub_be.payload.request.GroupCategoryRequest;
 import com.company.payment_hub_be.payload.response.PageResponse;
 import com.company.payment_hub_be.payload.request.RejectRequest;
 import com.company.payment_hub_be.exception.BusinessException;
@@ -54,7 +54,7 @@ public abstract class GroupCategoryController {
 
     @PostMapping
     public ResponseEntity<GroupCategoryResponse> create(
-            @RequestBody GroupCategoryUpsertRequest request,
+            @RequestBody GroupCategoryRequest request,
             Principal principal) {
         String actor = principal.getName(); // Lấy username từ JWT
         return ResponseEntity.status(201).body(service.create(request, actor, false));
@@ -62,7 +62,7 @@ public abstract class GroupCategoryController {
 
     @PostMapping("/save-and-submit")
     public ResponseEntity<GroupCategoryResponse> createAndSubmit(
-            @RequestBody GroupCategoryUpsertRequest request,
+            @RequestBody GroupCategoryRequest request,
             Principal principal) {
         String actor = principal.getName();
         return ResponseEntity.status(201).body(service.create(request, actor, true));
@@ -71,7 +71,7 @@ public abstract class GroupCategoryController {
     @PutMapping("/{id}")
     public GroupCategoryResponse update(
             @PathVariable Long id,
-            @RequestBody GroupCategoryUpsertRequest request,
+            @RequestBody GroupCategoryRequest request,
             Principal principal) {
         String actor = principal.getName();
         return service.update(id, request, actor);

@@ -10,7 +10,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
-public class ApiExceptionHandler {
+public class ApiException {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiError> handleBusinessException(BusinessException exception, HttpServletRequest request) {
         ApiError error = new ApiError(

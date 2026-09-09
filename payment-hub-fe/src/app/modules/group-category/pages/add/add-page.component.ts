@@ -184,17 +184,29 @@ export class GroupCategoryAddPageComponent implements OnInit {
       error: (error) => {
         this.saving = false;
         
+        console.log('=== Error Debug ===');
+        console.log('Full error object:', error);
+        console.log('error.error:', error.error);
+        console.log('error.error.message:', error.error?.message);
+        console.log('error.status:', error.status);
+        
         let errorMsg = 'Lỗi lưu dữ liệu';
         
         if (error.error?.message) {
           const msg = error.error.message;
-          if (msg.includes('unique constraint') || msg.includes('ORA-00001')) {
-            errorMsg = 'Dữ liệu đã tồn tại. Vui lòng kiểm tra lại giá trị thành phần hoặc tên thành phần.';
+          // Check for duplicate paramType error from backend
+          if (msg.includes('Danh mục theo nhóm') && msg.includes('đã tồn tại')) {
+            errorMsg = msg; // Use backend message directly
+          } else if (msg.includes('unique constraint') || msg.includes('ORA-00001')) {
+            errorMsg = 'Danh mục theo nhóm đã tồn tại. Vui lòng nhập giá trị khác.';
           } else if (msg.includes('ORA-')) {
             errorMsg = 'Lỗi cơ sở dữ liệu. Vui lòng kiểm tra lại thông tin nhập.';
           } else {
             errorMsg = msg;
           }
+        } else if (error.status === 409) {
+          // HTTP 409 Conflict - duplicate error
+          errorMsg = 'Danh mục theo nhóm đã tồn tại. Vui lòng nhập giá trị khác.';
         } else if (error.status === 403) {
           errorMsg = 'Bạn không có quyền thực hiện thao tác này';
         } else if (error.status === 401) {
@@ -203,6 +215,7 @@ export class GroupCategoryAddPageComponent implements OnInit {
           errorMsg = 'Lỗi hệ thống. Vui lòng thử lại sau';
         }
         
+        console.log('Final error message:', errorMsg);
         this.toastService.error(errorMsg);
       }
     });
@@ -237,17 +250,29 @@ export class GroupCategoryAddPageComponent implements OnInit {
       error: (error) => {
         this.saving = false;
         
+        console.log('=== Error Debug (Save and Submit) ===');
+        console.log('Full error object:', error);
+        console.log('error.error:', error.error);
+        console.log('error.error.message:', error.error?.message);
+        console.log('error.status:', error.status);
+        
         let errorMsg = 'Lỗi lưu và gửi duyệt';
         
         if (error.error?.message) {
           const msg = error.error.message;
-          if (msg.includes('unique constraint') || msg.includes('ORA-00001')) {
-            errorMsg = 'Dữ liệu đã tồn tại. Vui lòng kiểm tra lại giá trị thành phần hoặc tên thành phần.';
+          // Check for duplicate paramType error from backend
+          if (msg.includes('Danh mục theo nhóm') && msg.includes('đã tồn tại')) {
+            errorMsg = msg; // Use backend message directly
+          } else if (msg.includes('unique constraint') || msg.includes('ORA-00001')) {
+            errorMsg = 'Danh mục theo nhóm đã tồn tại. Vui lòng nhập giá trị khác.';
           } else if (msg.includes('ORA-')) {
             errorMsg = 'Lỗi cơ sở dữ liệu. Vui lòng kiểm tra lại thông tin nhập.';
           } else {
             errorMsg = msg;
           }
+        } else if (error.status === 409) {
+          // HTTP 409 Conflict - duplicate error
+          errorMsg = 'Danh mục theo nhóm đã tồn tại. Vui lòng nhập giá trị khác.';
         } else if (error.status === 403) {
           errorMsg = 'Bạn không có quyền thực hiện thao tác này';
         } else if (error.status === 401) {
@@ -256,6 +281,7 @@ export class GroupCategoryAddPageComponent implements OnInit {
           errorMsg = 'Lỗi hệ thống. Vui lòng thử lại sau';
         }
         
+        console.log('Final error message:', errorMsg);
         this.toastService.error(errorMsg);
       }
     });

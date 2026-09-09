@@ -10,4 +10,8 @@ public interface GroupCategoryRepository extends JpaRepository<PmhGroupCategory,
     boolean existsByParamTypeIgnoreCaseAndParamValueIgnoreCase(String paramType, String paramValue);
 
     boolean existsByParamTypeIgnoreCaseAndParamValueIgnoreCaseAndIdNot(String paramType, String paramValue, Long id);
+
+    boolean existsByParamTypeIgnoreCase(String paramType);
+
+    boolean existsByParamTypeIgnoreCaseAndIdNot(String paramType, Long id);
 }

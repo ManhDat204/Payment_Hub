@@ -59,11 +59,11 @@
           </div>
           <div class="detail-field">
             <label>Ngày hiệu lực</label>
-            <div class="value">{{ diff?.oldData?.effectiveDate || '-' }}</div>
+            <div class="value">{{ formatDateTime(diff?.oldData?.effectiveDate) }}</div>
           </div>
           <div class="detail-field">
             <label>Ngày hết hiệu lực</label>
-            <div class="value">{{ diff?.oldData?.endEffectiveDate || '-' }}</div>
+            <div class="value">{{ formatDateTime(diff?.oldData?.endEffectiveDate) }}</div>
           </div>
           <div class="detail-field">
             <label>Mô tả</label>
@@ -99,11 +99,11 @@
           </div>
           <div class="detail-field" [class.changed]="isChanged('effectiveDate')">
             <label>Ngày hiệu lực</label>
-            <div class="value">{{ diff?.newData?.effectiveDate || record?.effectiveDate || '-' }}</div>
+            <div class="value">{{ formatDateTime(diff?.newData?.effectiveDate || record?.effectiveDate) }}</div>
           </div>
           <div class="detail-field" [class.changed]="isChanged('endEffectiveDate')">
             <label>Ngày hết hiệu lực</label>
-            <div class="value">{{ diff?.newData?.endEffectiveDate || record?.endEffectiveDate || '-' }}</div>
+            <div class="value">{{ formatDateTime(diff?.newData?.endEffectiveDate || record?.endEffectiveDate) }}</div>
           </div>
           <div class="detail-field" [class.changed]="isChanged('description')">
             <label>Mô tả</label>

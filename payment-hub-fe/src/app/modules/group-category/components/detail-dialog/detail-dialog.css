@@ -84,8 +84,8 @@
 }
 
 .compare-panel--new {
-  background: var(--primary-light);
-  border: 1px solid var(--primary-color);
+  background: white;
+  border: 1px solid var(--border-color);
 }
 
 .compare-panel-header {
